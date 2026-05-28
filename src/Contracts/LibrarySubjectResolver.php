@@ -1,0 +1,14 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Kurt\Modules\Library\Contracts;
+
+use Illuminate\Contracts\Auth\Authenticatable;
+use Kurt\Modules\Library\Values\Subject;
+
+interface LibrarySubjectResolver
+{
+    /** @return array<int, Subject> */
+    public function subjects(?Authenticatable $user): array;
+}
