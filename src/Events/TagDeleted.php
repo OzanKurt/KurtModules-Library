@@ -1,0 +1,15 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Kurt\Modules\Library\Events;
+
+use Illuminate\Foundation\Events\Dispatchable;
+use Kurt\Modules\Library\Models\Tag;
+
+final class TagDeleted
+{
+    use Dispatchable;
+
+    public function __construct(public readonly Tag $tag) {}
+}

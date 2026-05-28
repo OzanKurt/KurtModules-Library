@@ -1,0 +1,65 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Kurt\Modules\Library\Policies;
+
+use Illuminate\Contracts\Auth\Access\Gate;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Kurt\Modules\Library\Access\LibraryAccess;
+use Kurt\Modules\Library\Enums\Capability;
+use Kurt\Modules\Library\Models\Item;
+
+final class ItemPolicy
+{
+    public function __construct(private readonly LibraryAccess $access) {}
+
+    public function before(?Authenticatable $user, string $ability): ?bool
+    {
+        if ($user === null) {
+            return null;
+        }
+
+        /** @var Gate $gate */
+        $gate = app(Gate::class);
+        if ($gate->forUser($user)->has('canAdminLibrary') && $gate->forUser($user)->allows('canAdminLibrary')) {
+            return true;
+        }
+
+        return null;
+    }
+
+    public function view(?Authenticatable $user, Item $item): bool
+    {
+        return $this->access->check($user, $item, Capability::View);
+    }
+
+    public function download(?Authenticatable $user, Item $item): bool
+    {
+        return $this->access->check($user, $item, Capability::Download);
+    }
+
+    public function manage(?Authenticatable $user, Item $item): bool
+    {
+        if ($user === null) {
+            return false;
+        }
+
+        return $this->access->check($user, $item, Capability::Manage);
+    }
+
+    public function create(Authenticatable $user): bool
+    {
+        return true;
+    }
+
+    public function update(Authenticatable $user, Item $item): bool
+    {
+        return $this->manage($user, $item);
+    }
+
+    public function delete(Authenticatable $user, Item $item): bool
+    {
+        return $this->manage($user, $item);
+    }
+}
