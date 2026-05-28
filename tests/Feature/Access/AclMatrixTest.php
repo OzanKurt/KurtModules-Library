@@ -158,18 +158,20 @@ it('checks capability on a folder via an Item proxy', function () {
     expect($access->check($this->other, $item, Capability::Download))->toBeTrue();
 });
 
-it('records the subject value as the user identifier when matching', function () {
+it('does not match when subject_value differs from the user identifier', function () {
     $folder = Folder::factory()
         ->visibility(FolderVisibility::Restricted)
         ->create(['owner_id' => $this->owner->id]);
 
+    $other = $this->other;
+
     FolderPermission::factory()
-        ->state(fn () => [
+        ->state([
             'subject_type' => PermissionSubjectType::User,
-            'subject_value' => 'definitely-not-' . $this->other->id,
+            'subject_value' => 'definitely-not-' . $other->id,
             'capability' => Capability::Manage,
         ])
         ->create(['folder_id' => $folder->id]);
 
-    expect($this->access->check($this->other, $folder, Capability::View))->toBeFalse();
+    expect($this->access->check($other, $folder, Capability::View))->toBeFalse();
 });
