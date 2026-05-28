@@ -3,11 +3,13 @@
 declare(strict_types=1);
 
 use Kurt\Modules\Library\Access\LibraryAccess;
+use Kurt\Modules\Library\Access\PermissionResolver;
 use Kurt\Modules\Library\Enums\Capability;
 use Kurt\Modules\Library\Enums\FolderVisibility;
 use Kurt\Modules\Library\Enums\PermissionSubjectType;
 use Kurt\Modules\Library\Models\Folder;
 use Kurt\Modules\Library\Models\FolderPermission;
+use Kurt\Modules\Library\Models\Item;
 use Kurt\Modules\Library\Tests\Stubs\StubUser;
 
 beforeEach(function () {
@@ -47,7 +49,7 @@ it('denies non-owner on a Private folder without an explicit permission row', fu
         ->create(['owner_id' => $this->owner->id]);
 
     // fresh resolver to avoid cached state across users with same folder id
-    $access = new LibraryAccess(app(\Kurt\Modules\Library\Access\PermissionResolver::class));
+    $access = new LibraryAccess(app(PermissionResolver::class));
 
     expect($access->check($this->other, $folder, Capability::View))->toBeFalse();
 });
@@ -61,7 +63,7 @@ it('grants Download to a user with an explicit Download permission row on a Rest
         ->forUser($this->other->id, Capability::Download)
         ->create(['folder_id' => $folder->id]);
 
-    $access = new LibraryAccess(app(\Kurt\Modules\Library\Access\PermissionResolver::class));
+    $access = new LibraryAccess(app(PermissionResolver::class));
 
     expect($access->check($this->other, $folder, Capability::View))->toBeTrue();
     expect($access->check($this->other, $folder, Capability::Download))->toBeTrue();
@@ -81,7 +83,7 @@ it('cascades a permission from a parent folder to a descendant when cascade=true
         ->forUser($this->other->id, Capability::View, cascade: true)
         ->create(['folder_id' => $parent->id]);
 
-    $access = new LibraryAccess(app(\Kurt\Modules\Library\Access\PermissionResolver::class));
+    $access = new LibraryAccess(app(PermissionResolver::class));
 
     expect($access->check($this->other, $child, Capability::View))->toBeTrue();
 });
@@ -99,7 +101,7 @@ it('does NOT cascade a permission from a parent folder when cascade=false', func
         ->forUser($this->other->id, Capability::View, cascade: false)
         ->create(['folder_id' => $parent->id]);
 
-    $access = new LibraryAccess(app(\Kurt\Modules\Library\Access\PermissionResolver::class));
+    $access = new LibraryAccess(app(PermissionResolver::class));
 
     expect($access->check($this->other, $child, Capability::View))->toBeFalse();
 });
@@ -123,7 +125,7 @@ it('uses the highest capability among matching ancestor + self rows', function (
         ->forUser($this->other->id, Capability::Download)
         ->create(['folder_id' => $child->id]);
 
-    $access = new LibraryAccess(app(\Kurt\Modules\Library\Access\PermissionResolver::class));
+    $access = new LibraryAccess(app(PermissionResolver::class));
 
     expect($access->check($this->other, $child, Capability::Download))->toBeTrue();
 });
@@ -150,10 +152,10 @@ it('checks capability on a folder via an Item proxy', function () {
         ->forUser($this->other->id, Capability::Download)
         ->create(['folder_id' => $folder->id]);
 
-    $item = \Kurt\Modules\Library\Models\Item::factory()
+    $item = Item::factory()
         ->create(['folder_id' => $folder->id, 'owner_id' => $this->owner->id]);
 
-    $access = new LibraryAccess(app(\Kurt\Modules\Library\Access\PermissionResolver::class));
+    $access = new LibraryAccess(app(PermissionResolver::class));
 
     expect($access->check($this->other, $item, Capability::Download))->toBeTrue();
 });
@@ -168,7 +170,7 @@ it('does not match when subject_value differs from the user identifier', functio
     FolderPermission::factory()
         ->state([
             'subject_type' => PermissionSubjectType::User,
-            'subject_value' => 'definitely-not-' . $other->id,
+            'subject_value' => 'definitely-not-'.$other->id,
             'capability' => Capability::Manage,
         ])
         ->create(['folder_id' => $folder->id]);
