@@ -12,14 +12,14 @@ final class PruneVersionsCommand extends Command
 {
     protected $signature = 'resource-library:prune-versions';
 
-    protected $description = 'For each item, retain the newest N versions (config library.versions.keep_old) plus the current_version_id; delete the rest.';
+    protected $description = 'For each item, retain the newest N versions (config resource-library.versions.keep_old) plus the current_version_id; delete the rest.';
 
     public function handle(): int
     {
-        $keep = config('library.versions.keep_old');
+        $keep = config('resource-library.versions.keep_old');
 
         if ($keep === null) {
-            $this->info('library.versions.keep_old is null — keeping all versions.');
+            $this->info('resource-library.versions.keep_old is null — keeping all versions.');
 
             return self::SUCCESS;
         }

@@ -27,7 +27,7 @@ class Tag extends Model
     use HasTranslations;
     use Sluggable;
 
-    protected $table = 'library_tags';
+    protected $table = 'resource_library_tags';
 
     /** @var list<string> */
     public array $translatable = ['name'];
@@ -48,7 +48,7 @@ class Tag extends Model
      */
     public function items(): BelongsToMany
     {
-        return $this->belongsToMany(Item::class, 'library_item_tag', 'tag_id', 'item_id');
+        return $this->belongsToMany(Item::class, 'resource_library_item_tag', 'tag_id', 'item_id');
     }
 
     protected static function newFactory(): TagFactory

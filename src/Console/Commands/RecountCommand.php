@@ -21,7 +21,7 @@ final class RecountCommand extends Command
         Folder::query()->chunkById(200, function ($folders) use (&$updated): void {
             foreach ($folders as $folder) {
                 /** @var Folder $folder */
-                $count = (int) DB::table('library_items')
+                $count = (int) DB::table('resource_library_items')
                     ->where('folder_id', $folder->id)
                     ->whereNull('deleted_at')
                     ->count();

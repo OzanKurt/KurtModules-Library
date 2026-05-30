@@ -19,10 +19,10 @@ it('rebuilds Folder.item_count after corruption', function () {
     ]);
 
     // Corrupt the counter directly.
-    DB::table('library_folders')->where('id', $folder->id)->update(['item_count' => 999]);
+    DB::table('resource_library_folders')->where('id', $folder->id)->update(['item_count' => 999]);
     expect(Folder::find($folder->id)->item_count)->toBe(999);
 
-    $this->artisan('library:recount')->assertSuccessful();
+    $this->artisan('resource-library:recount')->assertSuccessful();
 
     expect(Folder::find($folder->id)->item_count)->toBe(3);
 });
@@ -37,7 +37,7 @@ it('does not change correct counters', function () {
     // ItemObserver should keep this in sync already.
     expect(Folder::find($folder->id)->item_count)->toBe(2);
 
-    $this->artisan('library:recount')->assertSuccessful();
+    $this->artisan('resource-library:recount')->assertSuccessful();
 
     expect(Folder::find($folder->id)->item_count)->toBe(2);
 });

@@ -30,7 +30,7 @@ class ItemVersion extends Model
 
     use ResolvesUser;
 
-    protected $table = 'library_item_versions';
+    protected $table = 'resource_library_item_versions';
 
     /** @var list<string> */
     protected $fillable = [

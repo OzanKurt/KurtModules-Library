@@ -27,13 +27,13 @@ it('logs Download accesses and increments download_count', function () {
 });
 
 it('skips View accesses by default but logs when on_view config is enabled', function () {
-    config()->set('library.access_log.on_view', false);
+    config()->set('resource-library.access_log.on_view', false);
     $log = $this->item->recordAccess($this->owner, AccessAction::View);
     expect($log)->toBeNull();
     expect(AccessLog::count())->toBe(0);
     expect($this->item->fresh()->view_count)->toBe(0);
 
-    config()->set('library.access_log.on_view', true);
+    config()->set('resource-library.access_log.on_view', true);
     $log2 = $this->item->recordAccess($this->owner, AccessAction::View);
     expect($log2)->not->toBeNull();
     expect(AccessLog::count())->toBe(1);
@@ -41,7 +41,7 @@ it('skips View accesses by default but logs when on_view config is enabled', fun
 });
 
 it('skips all logging when access_log.enabled is false', function () {
-    config()->set('library.access_log.enabled', false);
+    config()->set('resource-library.access_log.enabled', false);
     expect($this->item->recordAccess($this->owner, AccessAction::Download))->toBeNull();
     expect(AccessLog::count())->toBe(0);
 });

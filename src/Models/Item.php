@@ -54,7 +54,7 @@ class Item extends Model implements HasMedia
     use Sluggable;
     use SoftDeletes;
 
-    protected $table = 'library_items';
+    protected $table = 'resource_library_items';
 
     /** @var list<string> */
     public array $translatable = ['title', 'description'];
@@ -96,7 +96,7 @@ class Item extends Model implements HasMedia
      */
     public function tags(): BelongsToMany
     {
-        return $this->belongsToMany(Tag::class, 'library_item_tag', 'item_id', 'tag_id');
+        return $this->belongsToMany(Tag::class, 'resource_library_item_tag', 'item_id', 'tag_id');
     }
 
     /**
@@ -161,11 +161,11 @@ class Item extends Model implements HasMedia
 
     public function recordAccess(?Model $user, AccessAction $action): ?AccessLog
     {
-        if (! (bool) config('library.access_log.enabled', true)) {
+        if (! (bool) config('resource-library.access_log.enabled', true)) {
             return null;
         }
 
-        if ($action === AccessAction::View && ! (bool) config('library.access_log.on_view', false)) {
+        if ($action === AccessAction::View && ! (bool) config('resource-library.access_log.on_view', false)) {
             return null;
         }
 

@@ -10,15 +10,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('library_items', function (Blueprint $table) {
+        Schema::create('resource_library_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('folder_id')->constrained('library_folders')->cascadeOnDelete();
+            $table->foreignId('folder_id')->constrained('resource_library_folders')->cascadeOnDelete();
             $table->string('slug');
             $table->json('title');
             $table->json('description')->nullable();
             $table->string('kind');
             $table->foreignId('owner_id')->constrained(config('auth.providers.users.table', 'users'))->restrictOnDelete();
-            $table->foreignId('current_version_id')->nullable()->constrained('library_item_versions')->nullOnDelete();
+            $table->foreignId('current_version_id')->nullable()->constrained('resource_library_item_versions')->nullOnDelete();
             $table->string('external_url')->nullable();
             $table->string('mime_type')->nullable();
             $table->unsignedBigInteger('byte_size')->nullable();
@@ -32,16 +32,16 @@ return new class extends Migration
             $table->index('kind');
         });
 
-        Schema::table('library_item_versions', function (Blueprint $table) {
-            $table->foreign('item_id')->references('id')->on('library_items')->cascadeOnDelete();
+        Schema::table('resource_library_item_versions', function (Blueprint $table) {
+            $table->foreign('item_id')->references('id')->on('resource_library_items')->cascadeOnDelete();
         });
     }
 
     public function down(): void
     {
-        Schema::table('library_item_versions', function (Blueprint $table) {
+        Schema::table('resource_library_item_versions', function (Blueprint $table) {
             $table->dropForeign(['item_id']);
         });
-        Schema::dropIfExists('library_items');
+        Schema::dropIfExists('resource_library_items');
     }
 };

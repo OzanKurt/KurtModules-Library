@@ -45,7 +45,7 @@ class Folder extends Model
     use Sluggable;
     use SoftDeletes;
 
-    protected $table = 'library_folders';
+    protected $table = 'resource_library_folders';
 
     /** @var list<string> */
     public array $translatable = ['name', 'description'];

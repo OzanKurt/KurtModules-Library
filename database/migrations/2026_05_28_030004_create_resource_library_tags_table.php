@@ -10,7 +10,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('library_tags', function (Blueprint $table) {
+        Schema::create('resource_library_tags', function (Blueprint $table) {
             $table->id();
             $table->string('slug')->unique();
             $table->json('name');
@@ -21,6 +21,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('library_tags');
+        Schema::dropIfExists('resource_library_tags');
     }
 };

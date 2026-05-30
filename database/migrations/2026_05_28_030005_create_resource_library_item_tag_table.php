@@ -10,15 +10,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('library_item_tag', function (Blueprint $table) {
-            $table->foreignId('item_id')->constrained('library_items')->cascadeOnDelete();
-            $table->foreignId('tag_id')->constrained('library_tags')->cascadeOnDelete();
+        Schema::create('resource_library_item_tag', function (Blueprint $table) {
+            $table->foreignId('item_id')->constrained('resource_library_items')->cascadeOnDelete();
+            $table->foreignId('tag_id')->constrained('resource_library_tags')->cascadeOnDelete();
             $table->primary(['item_id', 'tag_id']);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('library_item_tag');
+        Schema::dropIfExists('resource_library_item_tag');
     }
 };

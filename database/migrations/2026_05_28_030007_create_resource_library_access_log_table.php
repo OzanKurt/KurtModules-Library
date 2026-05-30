@@ -10,9 +10,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('library_access_log', function (Blueprint $table) {
+        Schema::create('resource_library_access_log', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('item_id')->constrained('library_items')->cascadeOnDelete();
+            $table->foreignId('item_id')->constrained('resource_library_items')->cascadeOnDelete();
             $table->foreignId('user_id')->nullable()->constrained(config('auth.providers.users.table', 'users'))->nullOnDelete();
             $table->string('action');
             $table->string('ip')->nullable();
@@ -24,6 +24,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('library_access_log');
+        Schema::dropIfExists('resource_library_access_log');
     }
 };

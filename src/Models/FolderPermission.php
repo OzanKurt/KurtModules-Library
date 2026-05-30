@@ -25,7 +25,7 @@ class FolderPermission extends Model
     /** @use HasFactory<FolderPermissionFactory> */
     use HasFactory;
 
-    protected $table = 'library_folder_permissions';
+    protected $table = 'resource_library_folder_permissions';
 
     /** @var list<string> */
     protected $fillable = [

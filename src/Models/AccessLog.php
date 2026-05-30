@@ -29,7 +29,7 @@ class AccessLog extends Model
 
     use ResolvesUser;
 
-    protected $table = 'library_access_log';
+    protected $table = 'resource_library_access_log';
 
     /** @var list<string> */
     protected $fillable = [
