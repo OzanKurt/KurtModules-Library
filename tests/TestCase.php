@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Kurt\Modules\Library\Tests;
+namespace Kurt\Modules\ResourceLibrary\Tests;
 
 use Cviebrock\EloquentSluggable\ServiceProvider as SluggableServiceProvider;
 use Illuminate\Foundation\Application;
 use Kurt\Modules\Core\Providers\CoreServiceProvider;
 use Kurt\Modules\Core\Testing\PackageTestCase;
-use Kurt\Modules\Library\Providers\LibraryServiceProvider;
+use Kurt\Modules\ResourceLibrary\Providers\ResourceLibraryServiceProvider;
 use Spatie\MediaLibrary\MediaLibraryServiceProvider;
 
 abstract class TestCase extends PackageTestCase
@@ -22,7 +22,7 @@ abstract class TestCase extends PackageTestCase
         return [
             SluggableServiceProvider::class,
             MediaLibraryServiceProvider::class,
-            LibraryServiceProvider::class,
+            ResourceLibraryServiceProvider::class,
         ];
     }
 
@@ -36,7 +36,7 @@ abstract class TestCase extends PackageTestCase
             CoreServiceProvider::class,
             SluggableServiceProvider::class,
             MediaLibraryServiceProvider::class,
-            LibraryServiceProvider::class,
+            ResourceLibraryServiceProvider::class,
         ];
     }
 

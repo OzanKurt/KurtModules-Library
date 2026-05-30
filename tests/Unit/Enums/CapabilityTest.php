@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Kurt\Modules\Library\Enums\Capability;
+use Kurt\Modules\ResourceLibrary\Enums\Capability;
 
 it('has expected cases and values', function () {
     expect(Capability::View->value)->toBe('view');

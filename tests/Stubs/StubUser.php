@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Kurt\Modules\Library\Tests\Stubs;
+namespace Kurt\Modules\ResourceLibrary\Tests\Stubs;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;

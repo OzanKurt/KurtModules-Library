@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\DB;
-use Kurt\Modules\Library\Models\Folder;
-use Kurt\Modules\Library\Models\Item;
-use Kurt\Modules\Library\Tests\Stubs\StubUser;
+use Kurt\Modules\ResourceLibrary\Models\Folder;
+use Kurt\Modules\ResourceLibrary\Models\Item;
+use Kurt\Modules\ResourceLibrary\Tests\Stubs\StubUser;
 
 beforeEach(function () {
     $this->owner = StubUser::create(['email' => 'owner@example.com']);

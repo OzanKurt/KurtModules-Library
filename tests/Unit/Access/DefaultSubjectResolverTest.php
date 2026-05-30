@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use Illuminate\Contracts\Auth\Authenticatable;
-use Kurt\Modules\Library\Access\DefaultSubjectResolver;
-use Kurt\Modules\Library\Enums\PermissionSubjectType;
+use Kurt\Modules\ResourceLibrary\Access\DefaultSubjectResolver;
+use Kurt\Modules\ResourceLibrary\Enums\PermissionSubjectType;
 
 it('returns Everyone subject only when user is null', function () {
     $subjects = (new DefaultSubjectResolver)->subjects(null);
