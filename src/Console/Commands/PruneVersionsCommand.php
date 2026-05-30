@@ -10,7 +10,7 @@ use Kurt\Modules\ResourceLibrary\Models\ItemVersion;
 
 final class PruneVersionsCommand extends Command
 {
-    protected $signature = 'library:prune-versions';
+    protected $signature = 'resource-library:prune-versions';
 
     protected $description = 'For each item, retain the newest N versions (config library.versions.keep_old) plus the current_version_id; delete the rest.';
 

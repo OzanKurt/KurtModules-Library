@@ -10,7 +10,7 @@ use Kurt\Modules\ResourceLibrary\Models\Folder;
 
 final class RecountCommand extends Command
 {
-    protected $signature = 'library:recount';
+    protected $signature = 'resource-library:recount';
 
     protected $description = 'Rebuild denormalised counters (Folder.item_count) from raw rows.';
 

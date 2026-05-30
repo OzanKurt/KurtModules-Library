@@ -13,7 +13,7 @@ use Kurt\Modules\ResourceLibrary\Models\Tag;
 
 final class DemoCommand extends Command
 {
-    protected $signature = 'library:demo';
+    protected $signature = 'resource-library:demo';
 
     protected $description = 'Seed demo folders, tags, and items.';
 
