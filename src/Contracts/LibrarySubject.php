@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Kurt\Modules\Library\Contracts;
+namespace Kurt\Modules\ResourceLibrary\Contracts;
 
 interface LibrarySubject
 {

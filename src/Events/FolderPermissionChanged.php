@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Kurt\Modules\Library\Events;
+namespace Kurt\Modules\ResourceLibrary\Events;
 
 use Illuminate\Foundation\Events\Dispatchable;
-use Kurt\Modules\Library\Models\FolderPermission;
+use Kurt\Modules\ResourceLibrary\Models\FolderPermission;
 
 final class FolderPermissionChanged
 {

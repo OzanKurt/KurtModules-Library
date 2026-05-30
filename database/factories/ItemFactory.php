@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Database\Factories\Kurt\Modules\Library;
+namespace Database\Factories\Kurt\Modules\ResourceLibrary;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Kurt\Modules\Library\Enums\ItemKind;
-use Kurt\Modules\Library\Models\Item;
+use Kurt\Modules\ResourceLibrary\Enums\ItemKind;
+use Kurt\Modules\ResourceLibrary\Models\Item;
 
 /**
  * @extends Factory<Item>

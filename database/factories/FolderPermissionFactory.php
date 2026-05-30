@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Database\Factories\Kurt\Modules\Library;
+namespace Database\Factories\Kurt\Modules\ResourceLibrary;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Kurt\Modules\Library\Enums\Capability;
-use Kurt\Modules\Library\Enums\PermissionSubjectType;
-use Kurt\Modules\Library\Models\FolderPermission;
+use Kurt\Modules\ResourceLibrary\Enums\Capability;
+use Kurt\Modules\ResourceLibrary\Enums\PermissionSubjectType;
+use Kurt\Modules\ResourceLibrary\Models\FolderPermission;
 
 /**
  * @extends Factory<FolderPermission>

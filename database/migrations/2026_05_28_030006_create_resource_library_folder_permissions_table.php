@@ -10,9 +10,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('library_folder_permissions', function (Blueprint $table) {
+        Schema::create('resource_library_folder_permissions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('folder_id')->constrained('library_folders')->cascadeOnDelete();
+            $table->foreignId('folder_id')->constrained('resource_library_folders')->cascadeOnDelete();
             $table->string('subject_type');
             $table->string('subject_value')->nullable();
             $table->string('capability');
@@ -24,6 +24,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('library_folder_permissions');
+        Schema::dropIfExists('resource_library_folder_permissions');
     }
 };

@@ -1,5 +1,5 @@
 {
-  "name": "ozankurt/laravel-modules-library",
+  "name": "ozankurt/laravel-modules-resource-library",
   "description": "SaaS resource library: nested folders with per-folder permissions, versioned items (video link, file, document, URL).",
   "keywords": ["laravel", "filament", "kurtmodules", "library", "resources", "knowledge-base"],
   "license": "MIT",
@@ -24,14 +24,14 @@
     "pestphp/pest-plugin-laravel": "^3.0",
     "rector/rector": "^2.0"
   },
-  "autoload": { "psr-4": { "Kurt\\Modules\\Library\\": "src/" } },
+  "autoload": { "psr-4": { "Kurt\\Modules\\ResourceLibrary\\": "src/" } },
   "autoload-dev": {
     "psr-4": {
-      "Kurt\\Modules\\Library\\Tests\\": "tests/",
-      "Database\\Factories\\Kurt\\Modules\\Library\\": "database/factories/"
+      "Kurt\\Modules\\ResourceLibrary\\Tests\\": "tests/",
+      "Database\\Factories\\Kurt\\Modules\\ResourceLibrary\\": "database/factories/"
     }
   },
-  "extra": { "laravel": { "providers": ["Kurt\\Modules\\Library\\Providers\\LibraryServiceProvider"] } },
+  "extra": { "laravel": { "providers": ["Kurt\\Modules\\ResourceLibrary\\Providers\\ResourceLibraryServiceProvider"] } },
   "repositories": [
     { "type": "vcs", "url": "https://github.com/OzanKurt/KurtModules-Core" }
   ],

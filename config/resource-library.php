@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-use Kurt\Modules\Library\Access\DefaultSubjectResolver;
-use Kurt\Modules\Library\Models\AccessLog;
-use Kurt\Modules\Library\Models\Folder;
-use Kurt\Modules\Library\Models\FolderPermission;
-use Kurt\Modules\Library\Models\Item;
-use Kurt\Modules\Library\Models\ItemVersion;
-use Kurt\Modules\Library\Models\Tag;
+use Kurt\Modules\ResourceLibrary\Access\DefaultSubjectResolver;
+use Kurt\Modules\ResourceLibrary\Models\AccessLog;
+use Kurt\Modules\ResourceLibrary\Models\Folder;
+use Kurt\Modules\ResourceLibrary\Models\FolderPermission;
+use Kurt\Modules\ResourceLibrary\Models\Item;
+use Kurt\Modules\ResourceLibrary\Models\ItemVersion;
+use Kurt\Modules\ResourceLibrary\Models\Tag;
 
 return [
     'media' => [
-        'disk' => env('LIBRARY_MEDIA_DISK', 'public'),
+        'disk' => env('RESOURCE_LIBRARY_MEDIA_DISK', 'public'),
         'allowed_mimes' => ['*'],
         'max_size_kb' => 100_000,
         'conversions' => [

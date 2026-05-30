@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Kurt\Modules\Library\Models;
+namespace Kurt\Modules\ResourceLibrary\Models;
 
-use Database\Factories\Kurt\Modules\Library\ItemVersionFactory;
+use Database\Factories\Kurt\Modules\ResourceLibrary\ItemVersionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -30,7 +30,7 @@ class ItemVersion extends Model
 
     use ResolvesUser;
 
-    protected $table = 'library_item_versions';
+    protected $table = 'resource_library_item_versions';
 
     /** @var list<string> */
     protected $fillable = [

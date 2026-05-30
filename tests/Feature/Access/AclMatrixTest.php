@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-use Kurt\Modules\Library\Access\LibraryAccess;
-use Kurt\Modules\Library\Access\PermissionResolver;
-use Kurt\Modules\Library\Enums\Capability;
-use Kurt\Modules\Library\Enums\FolderVisibility;
-use Kurt\Modules\Library\Enums\PermissionSubjectType;
-use Kurt\Modules\Library\Models\Folder;
-use Kurt\Modules\Library\Models\FolderPermission;
-use Kurt\Modules\Library\Models\Item;
-use Kurt\Modules\Library\Tests\Stubs\StubUser;
+use Kurt\Modules\ResourceLibrary\Access\LibraryAccess;
+use Kurt\Modules\ResourceLibrary\Access\PermissionResolver;
+use Kurt\Modules\ResourceLibrary\Enums\Capability;
+use Kurt\Modules\ResourceLibrary\Enums\FolderVisibility;
+use Kurt\Modules\ResourceLibrary\Enums\PermissionSubjectType;
+use Kurt\Modules\ResourceLibrary\Models\Folder;
+use Kurt\Modules\ResourceLibrary\Models\FolderPermission;
+use Kurt\Modules\ResourceLibrary\Models\Item;
+use Kurt\Modules\ResourceLibrary\Tests\Stubs\StubUser;
 
 beforeEach(function () {
     $this->owner = StubUser::create(['email' => 'owner@example.com']);

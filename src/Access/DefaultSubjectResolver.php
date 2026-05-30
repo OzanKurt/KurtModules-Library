@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Kurt\Modules\Library\Access;
+namespace Kurt\Modules\ResourceLibrary\Access;
 
 use Illuminate\Contracts\Auth\Authenticatable;
-use Kurt\Modules\Library\Contracts\LibrarySubjectResolver;
-use Kurt\Modules\Library\Enums\PermissionSubjectType;
-use Kurt\Modules\Library\Values\Subject;
+use Kurt\Modules\ResourceLibrary\Contracts\LibrarySubjectResolver;
+use Kurt\Modules\ResourceLibrary\Enums\PermissionSubjectType;
+use Kurt\Modules\ResourceLibrary\Values\Subject;
 
 final class DefaultSubjectResolver implements LibrarySubjectResolver
 {

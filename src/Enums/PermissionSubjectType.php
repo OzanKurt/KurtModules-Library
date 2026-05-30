@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Kurt\Modules\Library\Enums;
+namespace Kurt\Modules\ResourceLibrary\Enums;
 
 enum PermissionSubjectType: string
 {

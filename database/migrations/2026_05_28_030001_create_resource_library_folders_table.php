@@ -10,9 +10,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('library_folders', function (Blueprint $table) {
+        Schema::create('resource_library_folders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('parent_id')->nullable()->constrained('library_folders')->restrictOnDelete();
+            $table->foreignId('parent_id')->nullable()->constrained('resource_library_folders')->restrictOnDelete();
             $table->string('slug');
             $table->json('name');
             $table->json('description')->nullable();
@@ -30,6 +30,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('library_folders');
+        Schema::dropIfExists('resource_library_folders');
     }
 };

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Database\Factories\Kurt\Modules\Library;
+namespace Database\Factories\Kurt\Modules\ResourceLibrary;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Kurt\Modules\Library\Models\Tag;
+use Kurt\Modules\ResourceLibrary\Models\Tag;
 
 /**
  * @extends Factory<Tag>

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Kurt\Modules\Library\Access;
+namespace Kurt\Modules\ResourceLibrary\Access;
 
 use Illuminate\Contracts\Auth\Authenticatable;
-use Kurt\Modules\Library\Enums\Capability;
-use Kurt\Modules\Library\Models\Folder;
-use Kurt\Modules\Library\Models\Item;
+use Kurt\Modules\ResourceLibrary\Enums\Capability;
+use Kurt\Modules\ResourceLibrary\Models\Folder;
+use Kurt\Modules\ResourceLibrary\Models\Item;
 
 final class LibraryAccess
 {

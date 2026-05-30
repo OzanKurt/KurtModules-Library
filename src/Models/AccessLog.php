@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Kurt\Modules\Library\Models;
+namespace Kurt\Modules\ResourceLibrary\Models;
 
-use Database\Factories\Kurt\Modules\Library\AccessLogFactory;
+use Database\Factories\Kurt\Modules\ResourceLibrary\AccessLogFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 use Kurt\Modules\Core\Concerns\ResolvesUser;
-use Kurt\Modules\Library\Enums\AccessAction;
+use Kurt\Modules\ResourceLibrary\Enums\AccessAction;
 
 /**
  * @property int $id
@@ -29,7 +29,7 @@ class AccessLog extends Model
 
     use ResolvesUser;
 
-    protected $table = 'library_access_log';
+    protected $table = 'resource_library_access_log';
 
     /** @var list<string> */
     protected $fillable = [

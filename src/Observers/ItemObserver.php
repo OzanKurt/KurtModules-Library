@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Kurt\Modules\Library\Observers;
+namespace Kurt\Modules\ResourceLibrary\Observers;
 
-use Kurt\Modules\Library\Events\ItemCreated;
-use Kurt\Modules\Library\Events\ItemDeleted;
-use Kurt\Modules\Library\Events\ItemPublished;
-use Kurt\Modules\Library\Events\ItemUnpublished;
-use Kurt\Modules\Library\Events\ItemUpdated;
-use Kurt\Modules\Library\Models\Folder;
-use Kurt\Modules\Library\Models\Item;
+use Kurt\Modules\ResourceLibrary\Events\ItemCreated;
+use Kurt\Modules\ResourceLibrary\Events\ItemDeleted;
+use Kurt\Modules\ResourceLibrary\Events\ItemPublished;
+use Kurt\Modules\ResourceLibrary\Events\ItemUnpublished;
+use Kurt\Modules\ResourceLibrary\Events\ItemUpdated;
+use Kurt\Modules\ResourceLibrary\Models\Folder;
+use Kurt\Modules\ResourceLibrary\Models\Item;
 
 final class ItemObserver
 {

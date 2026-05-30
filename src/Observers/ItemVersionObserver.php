@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Kurt\Modules\Library\Observers;
+namespace Kurt\Modules\ResourceLibrary\Observers;
 
-use Kurt\Modules\Library\Events\ItemVersionCreated;
-use Kurt\Modules\Library\Models\Item;
-use Kurt\Modules\Library\Models\ItemVersion;
+use Kurt\Modules\ResourceLibrary\Events\ItemVersionCreated;
+use Kurt\Modules\ResourceLibrary\Models\Item;
+use Kurt\Modules\ResourceLibrary\Models\ItemVersion;
 
 final class ItemVersionObserver
 {

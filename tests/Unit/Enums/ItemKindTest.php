@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Kurt\Modules\Library\Enums\ItemKind;
+use Kurt\Modules\ResourceLibrary\Enums\ItemKind;
 
 it('has expected cases and values', function () {
     expect(ItemKind::VideoLink->value)->toBe('video_link');

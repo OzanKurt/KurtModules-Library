@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Kurt\Modules\Library\Policies;
+namespace Kurt\Modules\ResourceLibrary\Policies;
 
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Kurt\Modules\Library\Access\LibraryAccess;
-use Kurt\Modules\Library\Enums\Capability;
-use Kurt\Modules\Library\Models\Item;
+use Kurt\Modules\ResourceLibrary\Access\LibraryAccess;
+use Kurt\Modules\ResourceLibrary\Enums\Capability;
+use Kurt\Modules\ResourceLibrary\Models\Item;
 
 final class ItemPolicy
 {

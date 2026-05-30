@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Kurt\Modules\Library\Console\Commands;
+namespace Kurt\Modules\ResourceLibrary\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use Kurt\Modules\Library\Enums\ItemKind;
-use Kurt\Modules\Library\Models\Folder;
-use Kurt\Modules\Library\Models\Item;
-use Kurt\Modules\Library\Models\Tag;
+use Kurt\Modules\ResourceLibrary\Enums\ItemKind;
+use Kurt\Modules\ResourceLibrary\Models\Folder;
+use Kurt\Modules\ResourceLibrary\Models\Item;
+use Kurt\Modules\ResourceLibrary\Models\Tag;
 
 final class DemoCommand extends Command
 {
-    protected $signature = 'library:demo';
+    protected $signature = 'resource-library:demo';
 
     protected $description = 'Seed demo folders, tags, and items.';
 

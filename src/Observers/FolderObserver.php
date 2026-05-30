@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Kurt\Modules\Library\Observers;
+namespace Kurt\Modules\ResourceLibrary\Observers;
 
-use Kurt\Modules\Library\Events\FolderCreated;
-use Kurt\Modules\Library\Events\FolderDeleted;
-use Kurt\Modules\Library\Events\FolderMoved;
-use Kurt\Modules\Library\Events\FolderUpdated;
-use Kurt\Modules\Library\Models\Folder;
+use Kurt\Modules\ResourceLibrary\Events\FolderCreated;
+use Kurt\Modules\ResourceLibrary\Events\FolderDeleted;
+use Kurt\Modules\ResourceLibrary\Events\FolderMoved;
+use Kurt\Modules\ResourceLibrary\Events\FolderUpdated;
+use Kurt\Modules\ResourceLibrary\Models\Folder;
 
 final class FolderObserver
 {

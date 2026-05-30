@@ -10,7 +10,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('library_item_versions', function (Blueprint $table) {
+        Schema::create('resource_library_item_versions', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('item_id'); // FK added later (after items table exists)
             $table->unsignedInteger('version');
@@ -28,6 +28,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('library_item_versions');
+        Schema::dropIfExists('resource_library_item_versions');
     }
 };
