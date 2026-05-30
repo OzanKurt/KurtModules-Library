@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.1.0] - 2026-05-30
+
+### Added
+
+- Filament admin resources for **Filament v3, v4, and v5** in parallel, registered through a single version-dispatching `Kurt\Modules\ResourceLibrary\Filament\ResourceLibraryPlugin::make()` facade that resolves the matching `V3`/`V4`/`V5` plugin from the installed Filament major.
+  - `FolderResource` — per-locale (en/tr) translatable name/description, parent (tree) select, visibility enum select; table with name/path/visibility badge/item count + visibility filter; ACL relation manager for `resource_library_folder_permissions`.
+  - `ItemResource` — translatable title/description, reactive `kind` select (conditional `external_url` for video-link/external-URL kinds, Spatie media-library upload for file/document kinds), folder + tag selects, `published_at`; table with kind + published filters; read-only versions relation manager.
+  - `TagResource` — translatable name with colour picker and colour swatch column.
+  - `AccessLogResource` — read-only (no create/edit): item/user/action badge/timestamp table, filterable by action and date range, with a view action.
+- `filament/spatie-laravel-media-library-plugin` (`^3.0 || ^4.0 || ^5.0`) require-dev for the item file/document upload field.
+- Per-Filament-version PHPStan configs (`phpstan-filament-v{3,4,5}.neon`); the base `phpstan.neon` excludes all three version dirs + the facade and each per-version config adds its dir back.
+- Version-guarded Filament resource smoke tests under `tests/Feature/Filament/V{3,4,5}/`; only the installed major's suite runs.
+- CI matrix gains a Filament axis (`3.*`, `4.*`, `5.*`); PHPStan runs the per-major config in each cell.
+
 ## [3.0.1] - 2026-05-30
 
 ### Fixed
