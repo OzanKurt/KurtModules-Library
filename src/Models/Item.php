@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Kurt\Modules\Library\Models;
+namespace Kurt\Modules\ResourceLibrary\Models;
 
 use Cviebrock\EloquentSluggable\Sluggable;
-use Database\Factories\Kurt\Modules\Library\ItemFactory;
+use Database\Factories\Kurt\Modules\ResourceLibrary\ItemFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,8 +15,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Kurt\Modules\Core\Concerns\ResolvesUser;
-use Kurt\Modules\Library\Enums\AccessAction;
-use Kurt\Modules\Library\Enums\ItemKind;
+use Kurt\Modules\ResourceLibrary\Enums\AccessAction;
+use Kurt\Modules\ResourceLibrary\Enums\ItemKind;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;

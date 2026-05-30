@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Kurt\Modules\Library\Models;
+namespace Kurt\Modules\ResourceLibrary\Models;
 
 use Cviebrock\EloquentSluggable\Sluggable;
-use Database\Factories\Kurt\Modules\Library\FolderFactory;
+use Database\Factories\Kurt\Modules\ResourceLibrary\FolderFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Kurt\Modules\Core\Concerns\ResolvesUser;
-use Kurt\Modules\Library\Enums\FolderVisibility;
+use Kurt\Modules\ResourceLibrary\Enums\FolderVisibility;
 use Spatie\Translatable\HasTranslations;
 
 /**

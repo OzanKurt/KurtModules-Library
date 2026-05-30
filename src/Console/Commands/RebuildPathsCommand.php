@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Kurt\Modules\Library\Console\Commands;
+namespace Kurt\Modules\ResourceLibrary\Console\Commands;
 
 use Illuminate\Console\Command;
-use Kurt\Modules\Library\Models\Folder;
+use Kurt\Modules\ResourceLibrary\Models\Folder;
 
 final class RebuildPathsCommand extends Command
 {

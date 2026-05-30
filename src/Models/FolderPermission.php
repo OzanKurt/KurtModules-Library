@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Kurt\Modules\Library\Models;
+namespace Kurt\Modules\ResourceLibrary\Models;
 
-use Database\Factories\Kurt\Modules\Library\FolderPermissionFactory;
+use Database\Factories\Kurt\Modules\ResourceLibrary\FolderPermissionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Kurt\Modules\Library\Enums\Capability;
-use Kurt\Modules\Library\Enums\PermissionSubjectType;
+use Kurt\Modules\ResourceLibrary\Enums\Capability;
+use Kurt\Modules\ResourceLibrary\Enums\PermissionSubjectType;
 
 /**
  * @property int $id

@@ -2,25 +2,25 @@
 
 declare(strict_types=1);
 
-namespace Kurt\Modules\Library\Providers;
+namespace Kurt\Modules\ResourceLibrary\Providers;
 
 use Illuminate\Contracts\Auth\Access\Gate;
 use Kurt\Modules\Core\Providers\PackageServiceProvider;
-use Kurt\Modules\Library\Access\LibraryAccess;
-use Kurt\Modules\Library\Access\PermissionResolver;
-use Kurt\Modules\Library\Console\Commands\DemoCommand;
-use Kurt\Modules\Library\Console\Commands\PruneVersionsCommand;
-use Kurt\Modules\Library\Console\Commands\RebuildPathsCommand;
-use Kurt\Modules\Library\Console\Commands\RecountCommand;
-use Kurt\Modules\Library\Contracts\LibrarySubjectResolver;
-use Kurt\Modules\Library\Models\Folder;
-use Kurt\Modules\Library\Models\Item;
-use Kurt\Modules\Library\Models\ItemVersion;
-use Kurt\Modules\Library\Observers\FolderObserver;
-use Kurt\Modules\Library\Observers\ItemObserver;
-use Kurt\Modules\Library\Observers\ItemVersionObserver;
-use Kurt\Modules\Library\Policies\FolderPolicy;
-use Kurt\Modules\Library\Policies\ItemPolicy;
+use Kurt\Modules\ResourceLibrary\Access\LibraryAccess;
+use Kurt\Modules\ResourceLibrary\Access\PermissionResolver;
+use Kurt\Modules\ResourceLibrary\Console\Commands\DemoCommand;
+use Kurt\Modules\ResourceLibrary\Console\Commands\PruneVersionsCommand;
+use Kurt\Modules\ResourceLibrary\Console\Commands\RebuildPathsCommand;
+use Kurt\Modules\ResourceLibrary\Console\Commands\RecountCommand;
+use Kurt\Modules\ResourceLibrary\Contracts\LibrarySubjectResolver;
+use Kurt\Modules\ResourceLibrary\Models\Folder;
+use Kurt\Modules\ResourceLibrary\Models\Item;
+use Kurt\Modules\ResourceLibrary\Models\ItemVersion;
+use Kurt\Modules\ResourceLibrary\Observers\FolderObserver;
+use Kurt\Modules\ResourceLibrary\Observers\ItemObserver;
+use Kurt\Modules\ResourceLibrary\Observers\ItemVersionObserver;
+use Kurt\Modules\ResourceLibrary\Policies\FolderPolicy;
+use Kurt\Modules\ResourceLibrary\Policies\ItemPolicy;
 use Spatie\LaravelPackageTools\Package;
 
 final class LibraryServiceProvider extends PackageServiceProvider

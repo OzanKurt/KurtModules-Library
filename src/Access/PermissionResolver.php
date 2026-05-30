@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Kurt\Modules\Library\Access;
+namespace Kurt\Modules\ResourceLibrary\Access;
 
 use Illuminate\Contracts\Auth\Authenticatable;
-use Kurt\Modules\Library\Contracts\LibrarySubjectResolver;
-use Kurt\Modules\Library\Enums\Capability;
-use Kurt\Modules\Library\Enums\FolderVisibility;
-use Kurt\Modules\Library\Models\Folder;
-use Kurt\Modules\Library\Models\FolderPermission;
-use Kurt\Modules\Library\Values\Subject;
+use Kurt\Modules\ResourceLibrary\Contracts\LibrarySubjectResolver;
+use Kurt\Modules\ResourceLibrary\Enums\Capability;
+use Kurt\Modules\ResourceLibrary\Enums\FolderVisibility;
+use Kurt\Modules\ResourceLibrary\Models\Folder;
+use Kurt\Modules\ResourceLibrary\Models\FolderPermission;
+use Kurt\Modules\ResourceLibrary\Values\Subject;
 
 final class PermissionResolver
 {

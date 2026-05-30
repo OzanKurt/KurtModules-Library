@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Kurt\Modules\Library\Models;
+namespace Kurt\Modules\ResourceLibrary\Models;
 
 use Cviebrock\EloquentSluggable\Sluggable;
-use Database\Factories\Kurt\Modules\Library\TagFactory;
+use Database\Factories\Kurt\Modules\ResourceLibrary\TagFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

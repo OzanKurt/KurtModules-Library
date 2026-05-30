@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Kurt\Modules\Library\Values;
+namespace Kurt\Modules\ResourceLibrary\Values;
 
-use Kurt\Modules\Library\Enums\PermissionSubjectType;
+use Kurt\Modules\ResourceLibrary\Enums\PermissionSubjectType;
 
 final readonly class Subject
 {

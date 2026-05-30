@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Kurt\Modules\Library\Contracts;
+namespace Kurt\Modules\ResourceLibrary\Contracts;
 
 use Illuminate\Contracts\Auth\Authenticatable;
-use Kurt\Modules\Library\Values\Subject;
+use Kurt\Modules\ResourceLibrary\Values\Subject;
 
 interface LibrarySubjectResolver
 {
