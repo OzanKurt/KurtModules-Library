@@ -36,15 +36,7 @@ final class ResourceLibraryServiceProvider extends PackageServiceProvider
             ->name('laravel-modules-resource-library')
             ->hasConfigFile('resource-library')
             ->hasTranslations()
-            ->hasMigrations([
-                'create_resource_library_folders_table',
-                'create_resource_library_item_versions_table',
-                'create_resource_library_items_table',
-                'create_resource_library_tags_table',
-                'create_resource_library_item_tag_table',
-                'create_resource_library_folder_permissions_table',
-                'create_resource_library_access_log_table',
-            ])
+            ->discoversMigrations()
             ->hasCommands([
                 RecountCommand::class,
                 PruneVersionsCommand::class,
