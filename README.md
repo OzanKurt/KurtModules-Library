@@ -56,9 +56,53 @@ Permission resolution maps the host application's identity model (user + roles) 
 
 Apps with role-based access write a small `LibrarySubjectResolver` and bind its FQCN via `config('resource-library.subject_resolver')`.
 
-## Filament
+## Filament admin
 
-Filament v3/v4/v5 admin resources are planned for v3.1. The package is headless in v3.0.
+The package ships parallel admin resource sets for Filament **v3, v4, and v5** —
+`FolderResource`, `ItemResource`, `TagResource`, and `AccessLogResource`. The
+correct set is chosen at runtime from the installed Filament major, so you
+register a single version-dispatching plugin on your panel:
+
+```php
+use Filament\Panel;
+use Kurt\Modules\ResourceLibrary\Filament\ResourceLibraryPlugin;
+
+public function panel(Panel $panel): Panel
+{
+    return $panel
+        // ...
+        ->plugin(ResourceLibraryPlugin::make());
+}
+```
+
+`ResourceLibraryPlugin::make()` resolves to the matching `V3`/`V4`/`V5` plugin
+via `Kurt\Modules\Core\Support\FilamentVersion`. Install whichever Filament
+major your app uses — items with file/document kinds use the Spatie media
+library upload field:
+
+```bash
+# whichever your app runs
+composer require filament/filament:"^3.0|^4.0|^5.0"
+composer require filament/spatie-laravel-media-library-plugin:"^3.0|^4.0|^5.0"
+```
+
+What the resources give you:
+
+- **Folders** — per-locale (en/tr) translatable name/description, a parent
+  (tree) select and a `visibility` enum select; a table with name, path, a
+  visibility badge and item count plus a visibility filter; and an
+  **access-control relation manager** for the per-folder ACL
+  (subject type/value, capability, cascade).
+- **Items** — translatable title/description, a `kind` enum select that
+  reactively shows an `external_url` field for video-link/external-URL kinds
+  and a Spatie media-library upload for file/document kinds; folder and tag
+  relationship selects; a `published_at` picker; a table with kind and
+  published filters; and a read-only **versions relation manager** showing the
+  version history.
+- **Tags** — translatable name with a colour picker and a colour swatch column.
+- **Access log** — **read-only** (no create/edit): a table of item, user,
+  action badge and timestamp, filterable by action and date range, with a view
+  action for the full audit row.
 
 ## License
 
