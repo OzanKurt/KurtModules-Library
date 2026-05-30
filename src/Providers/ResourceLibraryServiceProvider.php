@@ -23,27 +23,27 @@ use Kurt\Modules\ResourceLibrary\Policies\FolderPolicy;
 use Kurt\Modules\ResourceLibrary\Policies\ItemPolicy;
 use Spatie\LaravelPackageTools\Package;
 
-final class LibraryServiceProvider extends PackageServiceProvider
+final class ResourceLibraryServiceProvider extends PackageServiceProvider
 {
     protected function module(): string
     {
-        return 'library';
+        return 'resource-library';
     }
 
     public function configurePackage(Package $package): void
     {
         $package
-            ->name('laravel-modules-library')
-            ->hasConfigFile('library')
+            ->name('laravel-modules-resource-library')
+            ->hasConfigFile('resource-library')
             ->hasTranslations()
             ->hasMigrations([
-                'create_library_folders_table',
-                'create_library_item_versions_table',
-                'create_library_items_table',
-                'create_library_tags_table',
-                'create_library_item_tag_table',
-                'create_library_folder_permissions_table',
-                'create_library_access_log_table',
+                'create_resource_library_folders_table',
+                'create_resource_library_item_versions_table',
+                'create_resource_library_items_table',
+                'create_resource_library_tags_table',
+                'create_resource_library_item_tag_table',
+                'create_resource_library_folder_permissions_table',
+                'create_resource_library_access_log_table',
             ])
             ->hasCommands([
                 RecountCommand::class,
@@ -57,7 +57,7 @@ final class LibraryServiceProvider extends PackageServiceProvider
     {
         $this->app->singleton(LibrarySubjectResolver::class, function () {
             /** @var class-string<LibrarySubjectResolver> $class */
-            $class = (string) config('library.subject_resolver');
+            $class = (string) config('resource-library.subject_resolver');
 
             return $this->app->make($class);
         });
