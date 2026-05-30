@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Database\Factories\Kurt\Modules\Library;
+namespace Database\Factories\Kurt\Modules\ResourceLibrary;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Kurt\Modules\Library\Enums\FolderVisibility;
-use Kurt\Modules\Library\Models\Folder;
+use Kurt\Modules\ResourceLibrary\Enums\FolderVisibility;
+use Kurt\Modules\ResourceLibrary\Models\Folder;
 
 /**
  * @extends Factory<Folder>
