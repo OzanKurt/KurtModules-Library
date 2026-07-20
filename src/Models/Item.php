@@ -162,6 +162,16 @@ class Item extends Model implements HasMedia
 
     public function recordAccess(?Model $user, AccessAction $action): ?AccessLog
     {
+        // Engagement counters are a separate concern from audit logging: the
+        // relevant counter is bumped on every access, independent of whether
+        // the access_log config chooses to persist a log row for this action.
+        // (view_count must NOT be coupled to access_log.on_view.)
+        if ($action === AccessAction::Download) {
+            $this->increment('download_count');
+        } else {
+            $this->increment('view_count');
+        }
+
         if (! (bool) config('resource-library.access_log.enabled', true)) {
             return null;
         }
@@ -177,12 +187,6 @@ class Item extends Model implements HasMedia
             'action' => $action,
             'occurred_at' => now(),
         ]);
-
-        if ($action === AccessAction::Download) {
-            $this->increment('download_count');
-        } else {
-            $this->increment('view_count');
-        }
 
         return $log;
     }
@@ -200,9 +204,12 @@ class Item extends Model implements HasMedia
 
     public function registerMediaConversions(?Media $media = null): void
     {
+        /** @var array{0: int, 1: int} $size */
+        $size = config('resource-library.media.conversions.thumb') ?? [320, 320];
+
         $thumb = $this->addMediaConversion('thumb');
-        $thumb->width(320);
-        $thumb->height(320);
+        $thumb->width($size[0]);
+        $thumb->height($size[1]);
         $thumb->nonQueued();
     }
 
