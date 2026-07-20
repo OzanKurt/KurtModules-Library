@@ -8,6 +8,7 @@ use Database\Factories\Kurt\Modules\ResourceLibrary\ItemVersionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 use Kurt\Modules\Core\Concerns\ResolvesUser;
 
 /**
@@ -21,6 +22,8 @@ use Kurt\Modules\Core\Concerns\ResolvesUser;
  * @property string|null $checksum
  * @property string|null $changelog
  * @property int $created_by
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property Item $item
  */
 class ItemVersion extends Model

@@ -68,5 +68,10 @@ final class ResourceLibraryServiceProvider extends PackageServiceProvider
         $gate = $this->app->make(Gate::class);
         $gate->policy(Folder::class, FolderPolicy::class);
         $gate->policy(Item::class, ItemPolicy::class);
+
+        // Register the out-of-the-box REST API. A no-op in headless mode; when
+        // enabled it wires the module's rate limiter + route group. Every route
+        // enforces the per-folder ACL inside its controller.
+        $this->registerModuleApi(__DIR__.'/../../routes/api.php');
     }
 }

@@ -140,6 +140,74 @@ carries a cascading `Everyone: view`.
 > grant to *cap* access inherited from higher up, that capping no longer
 > happens — review your ACL rows before upgrading.
 
+## API
+
+The package ships an out-of-the-box JSON REST API built on the Core "API kit".
+It is **safe-by-default**: nothing is registered until you opt in.
+
+> **The API enforces the per-folder ACL on every request.** Reads are
+> permission-scoped — listings only ever return folders/items the current
+> subject may view, and show endpoints `403` when the subject lacks the `view`
+> capability. Writes check the corresponding capability (`manage`) before
+> acting. A guest only ever sees `public` / `everyone`-granted content; there is
+> no public-anonymous library. This is the whole point of the module, so it is
+> not optional or configurable away.
+
+### Enabling it
+
+Set the HTTP mode to `api` (the default is `headless`):
+
+```dotenv
+RESOURCE_LIBRARY_HTTP_MODE=api
+```
+
+The `http` config block (published to `config/resource-library.php`) drives the
+route group:
+
+```php
+'http' => [
+    'mode' => env('RESOURCE_LIBRARY_HTTP_MODE', 'headless'), // headless | api | ui
+    'prefix' => 'api/library',
+    'middleware' => ['api'],
+    'auth_middleware' => ['auth'], // appended to write routes + the grant surface
+    'rate_limit' => '60,1',        // maxAttempts,decayMinutes (throttle "resource-library-api")
+],
+```
+
+In `headless` mode no routes are registered at all. Read routes stay in the base
+(unauthenticated-eligible) group so the `everyone` grant keeps working, but they
+are **not** unauthorised — each still authorises the subject against the folder
+ACL. Write routes and the ACL-grant surface additionally require the module
+`auth_middleware`.
+
+### Endpoints
+
+All paths are under the configured prefix (`api/library` by default). Named
+routes use the `resource-library.api.` prefix.
+
+| Method | Path | Action | ACL |
+|---|---|---|---|
+| GET | `folders` | List root folders (or children via `?parent=<id>`) | scoped to `view` |
+| GET | `folders/{folder}` | Show a folder | `view` |
+| POST | `folders` | Create a folder (child needs `parent_id`) | `manage` on parent (root: any auth user) |
+| PATCH | `folders/{folder}` | Update a folder | `manage` |
+| DELETE | `folders/{folder}` | Delete a folder | `manage` |
+| POST | `folders/{folder}/move` | Re-parent a folder (`parent_id`, null = root) | `manage` on source **and** target |
+| GET | `folders/{folder}/permissions` | List ACL grants (share) | `manage` |
+| POST | `folders/{folder}/permissions` | Add an ACL grant (share) | `manage` |
+| DELETE | `folders/{folder}/permissions/{permission}` | Revoke an ACL grant | `manage` |
+| GET | `folders/{folder}/items` | List items in a folder (drafts hidden from non-managers) | `view` folder |
+| GET | `items/{item}` | Show an item (resolves file/video-link/document/external-url) | `view` |
+| POST | `items` | Create an item (`folder_id`) | `manage` on folder |
+| PATCH | `items/{item}` | Update an item (`published` toggles publish) | `manage` |
+| DELETE | `items/{item}` | Delete an item | `manage` |
+| GET | `items/{item}/versions` | List an item's versions (newest first) | `view` |
+| POST | `items/{item}/versions` | Add a new version | `manage` |
+
+Index endpoints accept the Core query params: `?sort=field,-other`,
+`?filter[field]=value`, `?per_page=` and `?page=`. Responses use the Core
+envelope (`{ "data": ..., "meta": ... }`); listings carry `meta.pagination`.
+
 ## Filament admin
 
 The package ships parallel admin resource sets for Filament **v3, v4, and v5** —

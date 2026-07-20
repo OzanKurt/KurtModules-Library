@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Kurt\Modules\Core\Concerns\ResolvesUser;
 use Kurt\Modules\ResourceLibrary\Enums\FolderVisibility;
@@ -31,6 +32,8 @@ use Spatie\Translatable\HasTranslations;
  * @property FolderVisibility $visibility
  * @property int $owner_id
  * @property int $item_count
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property Folder|null $parent
  * @property Collection<int, Folder> $children
  * @property Collection<int, Item> $items
