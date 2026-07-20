@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Kurt\Modules\Core\Concerns\ResolvesUser;
 use Kurt\Modules\ResourceLibrary\Enums\AccessAction;
 use Kurt\Modules\ResourceLibrary\Enums\ItemKind;
@@ -141,23 +142,30 @@ class Item extends Model implements HasMedia
      */
     public function newVersion(array $payload, Model $by): ItemVersion
     {
-        $nextNumber = ((int) $this->versions()->max('version')) + 1;
+        // Wrap the read-then-create in a transaction and lock this item's
+        // existing version rows so two concurrent newVersion() calls can't read
+        // the same max('version') and race to the same number. The
+        // unique(item_id, version) index is the final backstop for the very
+        // first version (no rows exist yet to take a row lock on).
+        return DB::transaction(function () use ($payload, $by): ItemVersion {
+            $nextNumber = ((int) $this->versions()->lockForUpdate()->max('version')) + 1;
 
-        /** @var ItemVersion $version */
-        $version = $this->versions()->create([
-            'version' => $nextNumber,
-            'external_url' => $payload['external_url'] ?? null,
-            'media_path' => $payload['media_path'] ?? null,
-            'mime_type' => $payload['mime_type'] ?? null,
-            'byte_size' => $payload['byte_size'] ?? null,
-            'checksum' => $payload['checksum'] ?? null,
-            'changelog' => $payload['changelog'] ?? null,
-            'created_by' => $by->getKey(),
-        ]);
+            /** @var ItemVersion $version */
+            $version = $this->versions()->create([
+                'version' => $nextNumber,
+                'external_url' => $payload['external_url'] ?? null,
+                'media_path' => $payload['media_path'] ?? null,
+                'mime_type' => $payload['mime_type'] ?? null,
+                'byte_size' => $payload['byte_size'] ?? null,
+                'checksum' => $payload['checksum'] ?? null,
+                'changelog' => $payload['changelog'] ?? null,
+                'created_by' => $by->getKey(),
+            ]);
 
-        $this->forceFill(['current_version_id' => $version->id])->save();
+            $this->forceFill(['current_version_id' => $version->id])->save();
 
-        return $version;
+            return $version;
+        });
     }
 
     public function recordAccess(?Model $user, AccessAction $action): ?AccessLog

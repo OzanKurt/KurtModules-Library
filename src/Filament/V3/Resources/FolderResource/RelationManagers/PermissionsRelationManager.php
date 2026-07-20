@@ -18,6 +18,7 @@ use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Kurt\Modules\ResourceLibrary\Access\RoleSubjectSupport;
 use Kurt\Modules\ResourceLibrary\Enums\Capability;
 use Kurt\Modules\ResourceLibrary\Enums\PermissionSubjectType;
 
@@ -32,8 +33,11 @@ class PermissionsRelationManager extends RelationManager
         return $form
             ->schema([
                 Select::make('subject_type')
-                    ->options(PermissionSubjectType::class)
-                    ->default(PermissionSubjectType::Everyone)
+                    ->options(RoleSubjectSupport::subjectTypeOptions())
+                    ->default(PermissionSubjectType::Everyone->value)
+                    ->helperText(RoleSubjectSupport::enabled()
+                        ? null
+                        : 'Role grants need a custom LibrarySubjectResolver; the default resolver ignores them, so "role" is hidden.')
                     ->required()
                     ->live(),
                 TextInput::make('subject_value')
