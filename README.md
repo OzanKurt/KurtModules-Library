@@ -33,7 +33,7 @@ php artisan migrate
 - **Folder** — node in a tree (self-referential `parent_id`). Denormalised `path` column for fast ancestry queries (bounded to 1024 chars; see [Max depth](#max-depth)). `visibility` controls fallback behaviour: `public` / `restricted` / `private`.
 - **Item** — leaf in a folder. `kind` is one of `video_link`, `file`, `document`, `external_url`. Each kind stores its payload differently.
 - **Version** — every mutation creates a new `ItemVersion` row. `current_version_id` points at the active one.
-- **Permission** — per-folder ACL. Subject is `user`, `role`, or `everyone`. Grants `view`, `download`, or `manage`. Rows cascade to descendants by default. Resolution is **additive** (see [ACL resolution](#acl-resolution)). Note: `role` subjects only resolve when the app ships a custom resolver (see [Subject resolver](#subject-resolver)).
+- **Permission** — per-folder ACL. Subject is `user`, `role`, or `everyone`. Grants `view`, `download`, or `manage`. Rows cascade to descendants by default. Resolution is **additive** (see [ACL resolution](#acl-resolution)). Note: `role` subjects only resolve once a role source is configured (a `resource-library.roles.resolver` callable) or the app ships a custom resolver (see [Subject resolver](#subject-resolver)).
 - **Access log** — audit row written on `download` (and optionally `view`) of an item.
 
 ## What it provides
@@ -54,15 +54,65 @@ Permission resolution maps the host application's identity model (user + roles) 
 [Subject(Everyone, null), Subject(User, (string) $user->getKey())]
 ```
 
-Apps with role-based access write a small `LibrarySubjectResolver` and bind its FQCN via `config('resource-library.subject_resolver')`.
+### Wiring roles (the easy path)
 
-> **`role` grants require a custom resolver.** The default resolver emits only
-> `everyone` and `user` subjects, so a `role` permission row created against it
-> never matches — it is inert. To make `role` grants work, bind a resolver that
-> also emits `Subject(Role, …)` for the current user's roles. The Filament ACL
-> relation manager reflects this honestly: it **hides the `role` subject-type
-> option** (and flags it in a helper text) whenever the default resolver is in
-> use, so admins are never offered a grant that silently does nothing.
+To make `role` grants work **without writing a resolver class**, point the
+default resolver at your app's role source with a callable at
+`resource-library.roles.resolver`. It receives the current authenticatable and
+returns that subject's role ids (an array, or an `Arrayable`/Collection of
+`int|string`):
+
+```php
+// config/resource-library.php
+'roles' => [
+    'resolver' => fn ($user) => $user->roles->pluck('id'),
+],
+```
+
+With this set, the default resolver additionally emits
+`Subject(Role, (string) $roleId)` for each id, so a `role` permission row that
+matches one of the user's roles resolves out of the box. The Filament ACL
+relation managers detect the configured source and **re-enable the `role`
+subject-type option** automatically.
+
+Ids are cast to strings and matched against `FolderPermission.subject_value`, so
+store role grants using the same id the resolver returns.
+
+> A closure cannot survive `php artisan config:cache`. If you cache config, use
+> a custom resolver class (below) instead of a closure here.
+
+### Custom resolver (full control)
+
+Apps that need more than a role-id list write a small `LibrarySubjectResolver`
+and bind its FQCN via `config('resource-library.subject_resolver')`:
+
+```php
+final class AppSubjectResolver implements LibrarySubjectResolver
+{
+    public function subjects(?Authenticatable $user): array
+    {
+        $subjects = [new Subject(PermissionSubjectType::Everyone, null)];
+
+        if ($user !== null) {
+            $subjects[] = new Subject(PermissionSubjectType::User, (string) $user->getKey());
+
+            foreach ($user->roles as $role) {
+                $subjects[] = new Subject(PermissionSubjectType::Role, (string) $role->id);
+            }
+        }
+
+        return $subjects;
+    }
+}
+```
+
+> **When neither is wired, `role` grants are inert.** The default resolver with
+> no configured role source emits only `everyone` and `user` subjects, so a
+> `role` permission row never matches. The Filament ACL relation managers
+> reflect this honestly: they **hide the `role` subject-type option** (and flag
+> it in a helper text) until a role source or custom resolver is configured, so
+> admins are never offered a grant that silently does nothing. This keeps the
+> package fully backward compatible: no config means no change in behaviour.
 
 ## ACL resolution
 

@@ -37,7 +37,7 @@ class PermissionsRelationManager extends RelationManager
                     ->default(PermissionSubjectType::Everyone->value)
                     ->helperText(RoleSubjectSupport::enabled()
                         ? null
-                        : 'Role grants need a custom LibrarySubjectResolver; the default resolver ignores them, so "role" is hidden.')
+                        : 'Role grants need a configured role source (resource-library.roles.resolver) or a custom LibrarySubjectResolver; until one is set they never resolve, so "role" is hidden.')
                     ->required()
                     ->live(),
                 TextInput::make('subject_value')

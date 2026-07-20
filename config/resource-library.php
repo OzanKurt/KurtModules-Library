@@ -23,6 +23,22 @@ return [
         'keep_old' => 10,
     ],
     'subject_resolver' => DefaultSubjectResolver::class,
+    'roles' => [
+        // Role source for the default resolver. Supply a callable that receives
+        // the current authenticatable and returns that subject's role ids (an
+        // array or Arrayable/Collection of int|string). When set, the default
+        // resolver emits `role` subjects so `role` grants resolve out of the
+        // box and the Filament ACL relation managers re-enable the `role`
+        // option. Leave null to keep the legacy behaviour (role grants inert,
+        // the `role` option hidden in the admin UI).
+        //
+        // Example:
+        //   'resolver' => fn ($user) => $user->roles->pluck('id'),
+        //
+        // Note: a closure here cannot survive `php artisan config:cache`. If you
+        // cache config, bind a custom `subject_resolver` class instead.
+        'resolver' => null,
+    ],
     'access_log' => [
         'enabled' => true,
         'on_view' => false,
