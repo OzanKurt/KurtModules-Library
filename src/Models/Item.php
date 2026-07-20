@@ -39,6 +39,8 @@ use Spatie\Translatable\HasTranslations;
  * @property int $download_count
  * @property int $view_count
  * @property Carbon|null $published_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property Folder $folder
  * @property Collection<int, ItemVersion> $versions
  * @property ItemVersion|null $currentVersion

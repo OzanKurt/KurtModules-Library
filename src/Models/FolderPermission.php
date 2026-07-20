@@ -8,6 +8,7 @@ use Database\Factories\Kurt\Modules\ResourceLibrary\FolderPermissionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 use Kurt\Modules\ResourceLibrary\Enums\Capability;
 use Kurt\Modules\ResourceLibrary\Enums\PermissionSubjectType;
 
@@ -18,6 +19,8 @@ use Kurt\Modules\ResourceLibrary\Enums\PermissionSubjectType;
  * @property string|null $subject_value
  * @property Capability $capability
  * @property bool $cascade
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property Folder $folder
  */
 class FolderPermission extends Model

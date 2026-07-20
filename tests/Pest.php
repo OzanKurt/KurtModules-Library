@@ -5,9 +5,11 @@ declare(strict_types=1);
 use Filament\Forms\Form;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Kurt\Modules\ResourceLibrary\Tests\ApiTestCase;
 use Kurt\Modules\ResourceLibrary\Tests\TestCase;
 
 pest()->extend(TestCase::class)->in('Feature');
+pest()->extend(ApiTestCase::class)->in('Api');
 
 /*
 |--------------------------------------------------------------------------

@@ -6,6 +6,11 @@ All notable changes to this project will be documented in this file. The format 
 
 ### Added
 
+- Out-of-the-box JSON REST API built on the Core "API kit" (Core `^2.2`), gated by `resource-library.http.mode` (`headless` by default; enable with `RESOURCE_LIBRARY_HTTP_MODE=api`). New `http` config block (`prefix` `api/library`, base `middleware`, per-route `auth_middleware`, `rate_limit`) and `ResourceLibraryServiceProvider::registerModuleApi()` wiring in `packageBooted()`.
+  - Folders: index (root or `?parent=`), show, store, update, destroy, `move`, plus per-folder ACL-grant management (`GET/POST/DELETE folders/{folder}/permissions`).
+  - Items: index (within a folder), show (resolves file/video-link/document/external-url), store, update (with publish toggle), destroy, plus versions list / add version.
+  - Thin controllers over the existing domain services; `FormRequest` validation; per-model API Resources; index sort/filter/pagination via `HandlesApiQuery`.
+  - **ACL is enforced on every read and write.** Reads are permission-scoped through the Folder/Item policies (`PermissionResolver`): a subject only ever sees folders/items they may view, siblings they lack access to are never leaked, and a guest sees only `public`/`everyone`-granted content. Writes require the corresponding capability (`manage`); moves require `manage` on both source and target.
 - Config-driven role subjects for the default resolver. Set `resource-library.roles.resolver` to a callable (e.g. `fn ($user) => $user->roles->pluck('id')`) and `DefaultSubjectResolver` now emits a `Subject(Role, …)` per returned id, so `role` permission grants resolve out of the box without shipping a custom `LibrarySubjectResolver`. Ids are cast to strings and matched against `FolderPermission.subject_value`.
 - The Filament ACL relation managers (v3/v4/v5) automatically re-enable the `role` subject-type option when a role source is configured (via `RoleSubjectSupport::enabled()`), reversing the hide when roles are wired.
 

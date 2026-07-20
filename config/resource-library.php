@@ -11,6 +11,18 @@ use Kurt\Modules\ResourceLibrary\Models\ItemVersion;
 use Kurt\Modules\ResourceLibrary\Models\Tag;
 
 return [
+    // REST API surface (Core "API kit"). Safe-by-default: the routes register
+    // only when `mode` is `api` (or `ui`); in `headless` nothing is exposed and
+    // the module is driven purely through its domain services. Every endpoint
+    // still enforces the per-folder ACL (see the Folder/Item policies), so the
+    // API never leaks a folder or item the current subject cannot view.
+    'http' => [
+        'mode' => env('RESOURCE_LIBRARY_HTTP_MODE', 'headless'),
+        'prefix' => 'api/library',
+        'middleware' => ['api'],
+        'auth_middleware' => ['auth'],
+        'rate_limit' => '60,1',
+    ],
     'media' => [
         'disk' => env('RESOURCE_LIBRARY_MEDIA_DISK', 'public'),
         'allowed_mimes' => ['*'],
