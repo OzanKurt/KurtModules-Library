@@ -9,23 +9,32 @@ use Kurt\Modules\ResourceLibrary\Enums\PermissionSubjectType;
 /**
  * Tells the admin UI whether `role` permission subjects actually resolve.
  *
- * The shipped {@see DefaultSubjectResolver} only emits `everyone` + `user`
- * subjects, so a `role` grant created against it is inert (it can never match).
- * Role grants only work when the host app binds a custom LibrarySubjectResolver
- * that emits `role` subjects via `config('resource-library.subject_resolver')`.
+ * Out of the box the shipped {@see DefaultSubjectResolver} emits only `everyone`
+ * + `user` subjects, so a `role` grant is inert (it can never match). Role
+ * grants become live in either of two ways:
  *
- * The Filament ACL relation manager uses this to hide the `role` option (and
- * flag it) when the default resolver is in use, so admins are not offered a
- * grant that silently does nothing.
+ *  1. Configure a role source callable at `resource-library.roles.resolver`,
+ *     which the default resolver reads to emit `role` subjects; or
+ *  2. Bind a custom LibrarySubjectResolver via
+ *     `config('resource-library.subject_resolver')` that emits `role` subjects.
+ *
+ * The Filament ACL relation managers use this to hide the `role` option (and
+ * flag it) when neither is set, so admins are not offered a grant that silently
+ * does nothing.
  */
 final class RoleSubjectSupport
 {
     /**
-     * Role subjects are considered supported when the configured resolver is
-     * anything other than the default (everyone + user only) one.
+     * Role subjects are considered supported when a role source is configured
+     * for the default resolver, or when a custom resolver replaces the default
+     * (everyone + user only) one.
      */
     public static function enabled(): bool
     {
+        if (is_callable(config('resource-library.roles.resolver'))) {
+            return true;
+        }
+
         return config('resource-library.subject_resolver') !== DefaultSubjectResolver::class;
     }
 

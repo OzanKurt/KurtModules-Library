@@ -25,6 +25,15 @@ it('reports role subjects as supported and offers the role option under a custom
         ->toBe(['user' => 'User', 'role' => 'Role', 'everyone' => 'Everyone']);
 });
 
+it('reports role subjects as supported and re-enables the role option when a role source is configured', function () {
+    config()->set('resource-library.subject_resolver', DefaultSubjectResolver::class);
+    config()->set('resource-library.roles.resolver', fn ($user) => [1]);
+
+    expect(RoleSubjectSupport::enabled())->toBeTrue();
+    expect(RoleSubjectSupport::subjectTypeOptions())
+        ->toBe(['user' => 'User', 'role' => 'Role', 'everyone' => 'Everyone']);
+});
+
 /**
  * Stand-in for a host app's role-aware resolver binding; only its identity
  * (!== DefaultSubjectResolver) matters to RoleSubjectSupport.

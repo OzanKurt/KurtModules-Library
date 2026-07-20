@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Config-driven role subjects for the default resolver. Set `resource-library.roles.resolver` to a callable (e.g. `fn ($user) => $user->roles->pluck('id')`) and `DefaultSubjectResolver` now emits a `Subject(Role, …)` per returned id, so `role` permission grants resolve out of the box without shipping a custom `LibrarySubjectResolver`. Ids are cast to strings and matched against `FolderPermission.subject_value`.
+- The Filament ACL relation managers (v3/v4/v5) automatically re-enable the `role` subject-type option when a role source is configured (via `RoleSubjectSupport::enabled()`), reversing the hide when roles are wired.
+
+### Notes
+
+- Fully backward compatible: with no `roles.resolver` configured, behaviour is unchanged — role grants stay inert and the `role` option stays hidden.
+- A closure in `roles.resolver` cannot survive `php artisan config:cache`; cache-config apps should bind a custom `subject_resolver` class instead.
+- The additive ACL resolution semantics are unchanged.
+
 ## [3.1.0] - 2026-05-30
 
 ### Added
