@@ -20,36 +20,44 @@ final class PermissionResolver
     {
         $subjects = $this->subjectResolver->subjects($user);
 
-        // Walk ancestry from self upward. On self the row need not cascade;
-        // on ancestors only cascading rows apply.
+        // ADDITIVE resolution (intentional design): the effective capability is
+        // the MAXIMUM capability rank across the WHOLE ancestor chain, not the
+        // nearest match. We walk every folder from self upward and keep the
+        // single highest grant we can find. On self a row need not cascade; on
+        // ancestors only cascading rows apply.
         //
-        // ACL DESIGN (pinned by tests, intentional): the walk STOPS at the
-        // nearest folder that yields any match. A permission on a closer
-        // ancestor therefore shadows one on a farther ancestor even when the
-        // farther grant is higher — resolution is "nearest wins", not "highest
-        // across the whole chain". Only rows on the SAME folder are compared by
-        // rank (see matchOn).
+        // This deliberately removes the old "nearest wins" footgun where a
+        // closer, lower grant (e.g. `Everyone: View` on the parent) shadowed a
+        // farther, higher grant (e.g. `user: Manage` on the grandparent) and so
+        // silently downgraded a user. Now the farther Manage still wins.
+        $best = null;
+
         foreach ($this->ancestry($folder) as $ancestor) {
-            $best = $this->matchOn($ancestor, $subjects, allowCascadeOnly: $ancestor->id !== $folder->id);
-            if ($best !== null) {
-                return $best;
+            $match = $this->matchOn($ancestor, $subjects, allowCascadeOnly: $ancestor->id !== $folder->id);
+
+            if ($match !== null && ($best === null || $match->rank() > $best->rank())) {
+                $best = $match;
             }
         }
 
-        // Fallback to visibility on the target folder itself.
-        //
-        // ACL DESIGN (pinned by tests, intentional): the visibility fallback is
-        // reached only when NO permission row matched anywhere in the chain.
-        // A Restricted folder still inherits cascading ancestor grants (they are
-        // handled by the loop above); "Restricted" caps the *fallback*, it does
-        // not sever inheritance.
-        return match ($folder->visibility) {
+        // The visibility fallback of the target folder contributes its own
+        // baseline capability to the SAME maximum rather than only applying when
+        // nothing matched. A Restricted folder contributes nothing here yet
+        // still inherits cascading ancestor grants (handled by the loop above):
+        // "Restricted" caps only this fallback, it does not sever inheritance.
+        $fallback = match ($folder->visibility) {
             FolderVisibility::Public => Capability::Download,
             FolderVisibility::Restricted => null,
             FolderVisibility::Private => $user !== null && $folder->owner_id === $user->getAuthIdentifier()
                 ? Capability::Manage
                 : null,
         };
+
+        if ($fallback !== null && ($best === null || $fallback->rank() > $best->rank())) {
+            $best = $fallback;
+        }
+
+        return $best;
     }
 
     /**

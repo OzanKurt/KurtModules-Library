@@ -8,16 +8,18 @@ declare(strict_types=1);
 |--------------------------------------------------------------------------
 |
 | These tests PIN two deliberate resolution behaviours so they are explicit
-| and regression-guarded. They are NOT asserting a "correct" ACL policy —
-| they lock in the *current* one so any future change is a conscious, visible
-| decision (see the audit tail: both are flagged "intentional or revisit?").
+| and regression-guarded.
 |
-| 1. Nearest-ancestor shadowing: the walk stops at the nearest folder that
-|    yields a match, so a closer ancestor's grant shadows a farther ancestor's
-|    grant even when the farther one is HIGHER.
+| 1. Additive / most-permissive-wins: resolution accumulates the MAXIMUM
+|    capability across the WHOLE ancestor chain (self + every cascade-eligible
+|    ancestor + the visibility fallback). A closer, lower grant no longer
+|    shadows a farther, higher one — the highest grant anywhere in the chain
+|    wins. (This replaced the previous "nearest-ancestor wins" model, which
+|    had the footgun that a closer `Everyone: View` silently downgraded a user
+|    granted `Manage` on a farther ancestor.)
 | 2. Restricted-still-inherits: a Restricted folder still receives cascading
 |    grants from ancestors; "Restricted" only caps the visibility *fallback*
-|    that applies when nothing matched.
+|    that applies when nothing else matched.
 |
 */
 
@@ -34,7 +36,7 @@ beforeEach(function () {
     $this->user = StubUser::create(['email' => 'user@example.com']);
 });
 
-it('PINS nearest-ancestor shadowing: a closer grant hides a farther higher grant', function () {
+it('PINS additive resolution: a farther higher grant is NOT shadowed by a closer lower grant', function () {
     // grandparent grants Manage (cascade); parent grants only View (cascade);
     // the leaf itself has no matching row.
     $grandparent = Folder::factory()
@@ -58,11 +60,39 @@ it('PINS nearest-ancestor shadowing: a closer grant hides a farther higher grant
 
     $access = new LibraryAccess(app(PermissionResolver::class));
 
-    // Resolution stops at the parent (nearest match) with View, so the
-    // grandparent's higher Manage grant is shadowed and never applied.
+    // Resolution takes the MAX across the whole chain, so the grandparent's
+    // higher Manage grant wins over the parent's closer View grant.
     expect($access->check($this->user, $leaf, Capability::View))->toBeTrue();
-    expect($access->check($this->user, $leaf, Capability::Download))->toBeFalse();
-    expect($access->check($this->user, $leaf, Capability::Manage))->toBeFalse();
+    expect($access->check($this->user, $leaf, Capability::Download))->toBeTrue();
+    expect($access->check($this->user, $leaf, Capability::Manage))->toBeTrue();
+});
+
+it('PINS the exact downgrade case: grandparent user:Manage + parent Everyone:View resolves Manage', function () {
+    // The precise footgun the additive model removes: a broad, closer
+    // `Everyone: View` must NOT downgrade a user granted `Manage` further up.
+    $grandparent = Folder::factory()
+        ->visibility(FolderVisibility::Restricted)
+        ->create(['owner_id' => $this->owner->id]);
+    $parent = Folder::factory()
+        ->visibility(FolderVisibility::Restricted)
+        ->child($grandparent)
+        ->create(['owner_id' => $this->owner->id]);
+    $leaf = Folder::factory()
+        ->visibility(FolderVisibility::Restricted)
+        ->child($parent)
+        ->create(['owner_id' => $this->owner->id]);
+
+    FolderPermission::factory()
+        ->forUser($this->user->id, Capability::Manage, cascade: true)
+        ->create(['folder_id' => $grandparent->id]);
+    FolderPermission::factory()
+        ->forEveryone(Capability::View, cascade: true)
+        ->create(['folder_id' => $parent->id]);
+
+    $access = new LibraryAccess(app(PermissionResolver::class));
+
+    // The user keeps Manage; the closer Everyone:View does not cap them.
+    expect($access->check($this->user, $leaf, Capability::Manage))->toBeTrue();
 });
 
 it('PINS same-folder rows are still compared by rank (highest wins on one folder)', function () {

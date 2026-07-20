@@ -30,10 +30,10 @@ php artisan migrate
 
 ## Concepts
 
-- **Folder** — node in a tree (self-referential `parent_id`). Denormalised `path` column for fast ancestry queries. `visibility` controls fallback behaviour: `public` / `restricted` / `private`.
+- **Folder** — node in a tree (self-referential `parent_id`). Denormalised `path` column for fast ancestry queries (bounded to 1024 chars; see [Max depth](#max-depth)). `visibility` controls fallback behaviour: `public` / `restricted` / `private`.
 - **Item** — leaf in a folder. `kind` is one of `video_link`, `file`, `document`, `external_url`. Each kind stores its payload differently.
 - **Version** — every mutation creates a new `ItemVersion` row. `current_version_id` points at the active one.
-- **Permission** — per-folder ACL. Subject is `user`, `role`, or `everyone`. Grants `view`, `download`, or `manage`. Rows cascade to descendants by default.
+- **Permission** — per-folder ACL. Subject is `user`, `role`, or `everyone`. Grants `view`, `download`, or `manage`. Rows cascade to descendants by default. Resolution is **additive** (see [ACL resolution](#acl-resolution)). Note: `role` subjects only resolve when the app ships a custom resolver (see [Subject resolver](#subject-resolver)).
 - **Access log** — audit row written on `download` (and optionally `view`) of an item.
 
 ## What it provides
@@ -41,7 +41,7 @@ php artisan migrate
 - Models: `Folder`, `Item`, `ItemVersion`, `Tag`, `FolderPermission`, `AccessLog`.
 - Enums: `FolderVisibility`, `ItemKind`, `PermissionSubjectType`, `Capability`, `AccessAction`.
 - Access service: `Kurt\Modules\ResourceLibrary\Access\LibraryAccess::check($user, Folder|Item, Capability)`.
-- `Folder::moveTo(?Folder $newParent)` — rewrites a whole subtree's `path` + `depth` in one query.
+- `Folder::moveTo(?Folder $newParent)` — rewrites a whole subtree's `path` + `depth` with a single anchored `UPDATE` (plus the moved folder's own row), independent of subtree size. Guards against cycles and destination slug collisions with a `CannotMoveFolderException`.
 - Policies (`FolderPolicy`, `ItemPolicy`) that delegate to `LibraryAccess`. Global `canAdminLibrary` gate bypasses everything.
 - Console commands: `resource-library:recount`, `resource-library:prune-versions`, `resource-library:rebuild-paths`, `resource-library:demo`.
 - Domain events: `FolderCreated/Updated/Deleted/Moved`, `ItemCreated/Updated/Published/Unpublished/Deleted`, `ItemVersionCreated`, `ItemAccessed`, `TagCreated/Deleted`, `FolderPermissionChanged`.
@@ -55,6 +55,40 @@ Permission resolution maps the host application's identity model (user + roles) 
 ```
 
 Apps with role-based access write a small `LibrarySubjectResolver` and bind its FQCN via `config('resource-library.subject_resolver')`.
+
+> **`role` grants require a custom resolver.** The default resolver emits only
+> `everyone` and `user` subjects, so a `role` permission row created against it
+> never matches — it is inert. To make `role` grants work, bind a resolver that
+> also emits `Subject(Role, …)` for the current user's roles. The Filament ACL
+> relation manager reflects this honestly: it **hides the `role` subject-type
+> option** (and flags it in a helper text) whenever the default resolver is in
+> use, so admins are never offered a grant that silently does nothing.
+
+## ACL resolution
+
+`LibraryAccess::check($user, Folder|Item, Capability)` resolves the effective
+capability with an **additive, most-permissive-wins** model:
+
+- The resolver walks the target folder **and its entire ancestor chain** and
+  takes the **maximum** capability rank it can find (`view` < `download` <
+  `manage`). It does **not** stop at the nearest matching ancestor.
+- On the target folder itself, any matching row counts. On ancestors, only rows
+  with `cascade = true` count.
+- The folder's **visibility fallback** contributes its own baseline to the same
+  maximum: `public` ⇒ `download`, `private` ⇒ `manage` for the owner,
+  `restricted` ⇒ nothing. A `restricted` folder still inherits cascading
+  ancestor grants; "restricted" only caps this fallback.
+
+Because it takes the maximum across the whole chain, a broad, closer grant can
+never **downgrade** a narrower, higher grant further up. For example, a user
+granted `manage` on a grandparent keeps `manage` on a leaf even if the parent
+carries a cascading `Everyone: view`.
+
+> **Behaviour change (v3.1 → next):** earlier versions used "nearest-ancestor
+> wins", where the closest matching ancestor's grant shadowed farther ones even
+> when lower. That footgun is removed. If your app relied on a closer, lower
+> grant to *cap* access inherited from higher up, that capping no longer
+> happens — review your ACL rows before upgrading.
 
 ## Filament admin
 
@@ -103,6 +137,17 @@ What the resources give you:
 - **Access log** — **read-only** (no create/edit): a table of item, user,
   action badge and timestamp, filterable by action and date range, with a view
   action for the full audit row.
+
+## Max depth
+
+Ancestry is resolved from the denormalised `path` column (`/slug/slug/…`), which
+is stored as `VARCHAR(1024)`. On MySQL/MariaDB the column is indexed with a
+bounded 191-char prefix index (utf8mb4-safe) that is sufficient for the anchored
+`path LIKE '/a/b/%'` scans; PostgreSQL indexes the full column; SQLite does not
+enforce the length. In practice 1024 characters comfortably supports ~24 levels
+of nesting at ~40-char slugs — deeper trees should use shorter slugs. The bound
+is enforced by the `2026_07_20_000100_widen_resource_library_folder_path`
+migration.
 
 ## License
 

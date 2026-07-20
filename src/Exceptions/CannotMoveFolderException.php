@@ -17,4 +17,9 @@ final class CannotMoveFolderException extends RuntimeException
     {
         return new self('A folder cannot be moved into one of its own descendants.');
     }
+
+    public static function slugConflict(string $slug): self
+    {
+        return new self("The destination already contains a folder with the slug \"{$slug}\".");
+    }
 }

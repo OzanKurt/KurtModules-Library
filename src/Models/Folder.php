@@ -155,6 +155,7 @@ class Folder extends Model
     public function moveTo(?self $newParent): self
     {
         $this->guardAgainstCycle($newParent);
+        $this->guardAgainstSlugConflict($newParent);
 
         DB::transaction(function () use ($newParent): void {
             $oldPath = $this->path;
@@ -169,22 +170,20 @@ class Folder extends Model
                 'depth' => $this->depth + $depthDelta,
             ])->save();
 
-            // Rewrite descendant paths by replacing only the anchored path
-            // prefix. A driver-portable chunked PHP rewrite avoids the
-            // unanchored SQL REPLACE(), which double-substitutes when a
-            // descendant slug repeats an ancestor slug (e.g. /alpha/alpha/x).
-            $prefixLength = strlen($oldPath);
+            // Rewrite the whole subtree in a SINGLE anchored UPDATE instead of
+            // one save() per descendant (the old O(n) loop). Anchoring on the
+            // prefix length via SUBSTRING (not an unanchored REPLACE) keeps the
+            // rewrite correct when a descendant slug repeats an ancestor slug
+            // (e.g. /alpha/alpha/x). SUBSTRING is 1-indexed, so we start one
+            // past the old prefix. CONCAT + SUBSTRING is portable across
+            // MySQL/MariaDB, PostgreSQL and SQLite (3.44+).
+            $connection = $this->getConnection();
+            $table = $connection->getQueryGrammar()->wrapTable($this->getTable());
 
-            static::query()
-                ->where('path', 'like', $oldPath.'/%')
-                ->chunkById(500, function (Collection $descendants) use ($newPath, $prefixLength, $depthDelta): void {
-                    foreach ($descendants as $descendant) {
-                        $descendant->forceFill([
-                            'path' => $newPath.substr($descendant->path, $prefixLength),
-                            'depth' => $descendant->depth + $depthDelta,
-                        ])->save();
-                    }
-                });
+            $connection->update(
+                "update {$table} set path = CONCAT(?, SUBSTRING(path, ?)), depth = depth + ? where path like ?",
+                [$newPath, strlen($oldPath) + 1, $depthDelta, $oldPath.'/%'],
+            );
         });
 
         /** @var self $fresh */
@@ -208,6 +207,26 @@ class Folder extends Model
 
         if (str_starts_with($newParent->path, $this->path.'/')) {
             throw CannotMoveFolderException::intoDescendant();
+        }
+    }
+
+    /**
+     * Reject the move up front when the destination already has a sibling with
+     * this folder's slug, rather than letting the unique(parent_id, slug) index
+     * surface a raw QueryException mid-transaction. Mirrors the cycle guard.
+     *
+     * @throws CannotMoveFolderException
+     */
+    private function guardAgainstSlugConflict(?self $newParent): void
+    {
+        $conflict = static::query()
+            ->where('parent_id', $newParent?->getKey())
+            ->where('slug', $this->slug)
+            ->whereKeyNot($this->getKey())
+            ->exists();
+
+        if ($conflict) {
+            throw CannotMoveFolderException::slugConflict($this->slug);
         }
     }
 
