@@ -73,6 +73,7 @@ class Item extends Model implements HasMedia
         'view_count' => 'integer',
         'download_count' => 'integer',
         'byte_size' => 'integer',
+        'owner_id' => 'integer',
     ];
 
     /**
@@ -188,7 +189,13 @@ class Item extends Model implements HasMedia
 
     public function registerMediaCollections(): void
     {
-        $this->addMediaCollection('file')->singleFile();
+        /** @var string|null $configured */
+        $configured = config('resource-library.media.disk');
+        $disk = $configured ?? 'public';
+
+        $this->addMediaCollection('file')
+            ->useDisk($disk)
+            ->singleFile();
     }
 
     public function registerMediaConversions(?Media $media = null): void

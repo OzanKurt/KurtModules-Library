@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Kurt\Modules\Core\Concerns\ResolvesUser;
 use Kurt\Modules\ResourceLibrary\Enums\FolderVisibility;
+use Kurt\Modules\ResourceLibrary\Exceptions\CannotMoveFolderException;
 use Spatie\Translatable\HasTranslations;
 
 /**
@@ -62,6 +63,7 @@ class Folder extends Model
         'depth' => 'integer',
         'position' => 'integer',
         'item_count' => 'integer',
+        'owner_id' => 'integer',
     ];
 
     /**
@@ -147,8 +149,13 @@ class Folder extends Model
         return self::query()->whereIn('path', $paths);
     }
 
+    /**
+     * @throws CannotMoveFolderException when the target parent is this folder or one of its descendants.
+     */
     public function moveTo(?self $newParent): self
     {
+        $this->guardAgainstCycle($newParent);
+
         DB::transaction(function () use ($newParent): void {
             $oldPath = $this->path;
             $newParentPath = $newParent !== null ? $newParent->path : '';
@@ -162,23 +169,46 @@ class Folder extends Model
                 'depth' => $this->depth + $depthDelta,
             ])->save();
 
-            // Rewrite descendant paths in one query.
-            $pdo = DB::connection()->getPdo();
-            $oldQuoted = $pdo->quote($oldPath);
-            $newQuoted = $pdo->quote($newPath);
+            // Rewrite descendant paths by replacing only the anchored path
+            // prefix. A driver-portable chunked PHP rewrite avoids the
+            // unanchored SQL REPLACE(), which double-substitutes when a
+            // descendant slug repeats an ancestor slug (e.g. /alpha/alpha/x).
+            $prefixLength = strlen($oldPath);
 
             static::query()
                 ->where('path', 'like', $oldPath.'/%')
-                ->update([
-                    'path' => DB::raw(sprintf('REPLACE(path, %s, %s)', $oldQuoted, $newQuoted)),
-                    'depth' => DB::raw("depth + ({$depthDelta})"),
-                ]);
+                ->chunkById(500, function (Collection $descendants) use ($newPath, $prefixLength, $depthDelta): void {
+                    foreach ($descendants as $descendant) {
+                        $descendant->forceFill([
+                            'path' => $newPath.substr($descendant->path, $prefixLength),
+                            'depth' => $descendant->depth + $depthDelta,
+                        ])->save();
+                    }
+                });
         });
 
         /** @var self $fresh */
         $fresh = $this->fresh();
 
         return $fresh;
+    }
+
+    /**
+     * @throws CannotMoveFolderException
+     */
+    private function guardAgainstCycle(?self $newParent): void
+    {
+        if ($newParent === null) {
+            return;
+        }
+
+        if ($newParent->is($this) || $newParent->path === $this->path) {
+            throw CannotMoveFolderException::intoItself();
+        }
+
+        if (str_starts_with($newParent->path, $this->path.'/')) {
+            throw CannotMoveFolderException::intoDescendant();
+        }
     }
 
     protected static function newFactory(): FolderFactory
