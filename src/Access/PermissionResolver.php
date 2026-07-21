@@ -6,7 +6,7 @@ namespace Kurt\Modules\ResourceLibrary\Access;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Collection;
-use Kurt\Modules\ResourceLibrary\Contracts\LibrarySubjectResolver;
+use Kurt\Modules\ResourceLibrary\Contracts\ResourceLibrarySubjectResolver;
 use Kurt\Modules\ResourceLibrary\Enums\Capability;
 use Kurt\Modules\ResourceLibrary\Enums\FolderVisibility;
 use Kurt\Modules\ResourceLibrary\Models\Folder;
@@ -14,7 +14,7 @@ use Kurt\Modules\ResourceLibrary\Values\Subject;
 
 final class PermissionResolver
 {
-    public function __construct(private readonly LibrarySubjectResolver $subjectResolver) {}
+    public function __construct(private readonly ResourceLibrarySubjectResolver $subjectResolver) {}
 
     public function highestCapability(?Authenticatable $user, Folder $folder): ?Capability
     {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Illuminate\Contracts\Auth\Authenticatable;
 use Kurt\Modules\ResourceLibrary\Access\DefaultSubjectResolver;
 use Kurt\Modules\ResourceLibrary\Access\RoleSubjectSupport;
-use Kurt\Modules\ResourceLibrary\Contracts\LibrarySubjectResolver;
+use Kurt\Modules\ResourceLibrary\Contracts\ResourceLibrarySubjectResolver;
 use Kurt\Modules\ResourceLibrary\Enums\PermissionSubjectType;
 use Kurt\Modules\ResourceLibrary\Values\Subject;
 
@@ -38,7 +38,7 @@ it('reports role subjects as supported and re-enables the role option when a rol
  * Stand-in for a host app's role-aware resolver binding; only its identity
  * (!== DefaultSubjectResolver) matters to RoleSubjectSupport.
  */
-final class CustomRoleAwareResolver implements LibrarySubjectResolver
+final class CustomRoleAwareResolver implements ResourceLibrarySubjectResolver
 {
     /** @return array<int, Subject> */
     public function subjects(?Authenticatable $user): array

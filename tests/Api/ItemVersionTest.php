@@ -23,7 +23,7 @@ beforeEach(function () {
 
 it('adds a version for a manager and bumps the current version', function () {
     $this->actingAs($this->manager)
-        ->postJson("api/library/items/{$this->item->id}/versions", [
+        ->postJson("api/resource-library/items/{$this->item->id}/versions", [
             'external_url' => 'https://example.com/v1',
             'changelog' => 'Initial upload',
         ])
@@ -36,7 +36,7 @@ it('adds a version for a manager and bumps the current version', function () {
 
 it('403s adding a version for a viewer', function () {
     $this->actingAs($this->viewer)
-        ->postJson("api/library/items/{$this->item->id}/versions", ['changelog' => 'nope'])
+        ->postJson("api/resource-library/items/{$this->item->id}/versions", ['changelog' => 'nope'])
         ->assertForbidden();
 });
 
@@ -45,7 +45,7 @@ it('lists versions newest-first for a viewer', function () {
     $this->item->newVersion(['changelog' => 'v2'], $this->manager);
 
     $versions = $this->actingAs($this->viewer)
-        ->getJson("api/library/items/{$this->item->id}/versions")
+        ->getJson("api/resource-library/items/{$this->item->id}/versions")
         ->assertOk()
         ->json('data');
 
@@ -56,6 +56,6 @@ it('403s listing versions for a subject who cannot view the folder', function ()
     $stranger = StubUser::create(['email' => 'stranger@example.com']);
 
     $this->actingAs($stranger)
-        ->getJson("api/library/items/{$this->item->id}/versions")
+        ->getJson("api/resource-library/items/{$this->item->id}/versions")
         ->assertForbidden();
 });

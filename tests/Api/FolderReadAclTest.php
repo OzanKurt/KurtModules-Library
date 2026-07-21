@@ -20,7 +20,7 @@ it('scopes the root listing to folders the subject may view (sees A, not sibling
     // The member is granted view on A only.
     FolderPermission::factory()->forUser($this->member->id, Capability::View)->create(['folder_id' => $a->id]);
 
-    $response = $this->actingAs($this->member)->getJson('api/library/folders');
+    $response = $this->actingAs($this->member)->getJson('api/resource-library/folders');
 
     $response->assertOk();
     $ids = collect($response->json('data'))->pluck('id')->all();
@@ -33,7 +33,7 @@ it('403s on showing a sibling folder the subject cannot view', function () {
     $b = Folder::factory()->visibility(FolderVisibility::Restricted)->create(['owner_id' => $this->owner->id]);
 
     $this->actingAs($this->member)
-        ->getJson("api/library/folders/{$b->id}")
+        ->getJson("api/resource-library/folders/{$b->id}")
         ->assertForbidden();
 });
 
@@ -42,7 +42,7 @@ it('lets the subject show a folder they were granted view on', function () {
     FolderPermission::factory()->forUser($this->member->id, Capability::View)->create(['folder_id' => $a->id]);
 
     $this->actingAs($this->member)
-        ->getJson("api/library/folders/{$a->id}")
+        ->getJson("api/resource-library/folders/{$a->id}")
         ->assertOk()
         ->assertJsonPath('data.id', $a->id);
 });
@@ -52,7 +52,7 @@ it('403s the child listing when the subject cannot view the parent', function ()
     Folder::factory()->visibility(FolderVisibility::Restricted)->child($parent)->create(['owner_id' => $this->owner->id]);
 
     $this->actingAs($this->member)
-        ->getJson("api/library/folders?parent={$parent->id}")
+        ->getJson("api/resource-library/folders?parent={$parent->id}")
         ->assertForbidden();
 });
 
@@ -63,7 +63,7 @@ it('lists children once the subject has a cascading view grant on the parent', f
     FolderPermission::factory()->forUser($this->member->id, Capability::View, cascade: true)->create(['folder_id' => $parent->id]);
 
     $ids = collect(
-        $this->actingAs($this->member)->getJson("api/library/folders?parent={$parent->id}")->assertOk()->json('data')
+        $this->actingAs($this->member)->getJson("api/resource-library/folders?parent={$parent->id}")->assertOk()->json('data')
     )->pluck('id')->all();
 
     expect($ids)->toContain($child->id);
@@ -73,10 +73,10 @@ it('lets a guest see a public folder but not a restricted one', function () {
     $public = Folder::factory()->visibility(FolderVisibility::Public)->create(['owner_id' => $this->owner->id]);
     $restricted = Folder::factory()->visibility(FolderVisibility::Restricted)->create(['owner_id' => $this->owner->id]);
 
-    $ids = collect($this->getJson('api/library/folders')->assertOk()->json('data'))->pluck('id')->all();
+    $ids = collect($this->getJson('api/resource-library/folders')->assertOk()->json('data'))->pluck('id')->all();
 
     expect($ids)->toContain($public->id)
         ->and($ids)->not->toContain($restricted->id);
 
-    $this->getJson("api/library/folders/{$restricted->id}")->assertForbidden();
+    $this->getJson("api/resource-library/folders/{$restricted->id}")->assertForbidden();
 });

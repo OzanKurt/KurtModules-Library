@@ -23,8 +23,8 @@ declare(strict_types=1);
 |
 */
 
-use Kurt\Modules\ResourceLibrary\Access\LibraryAccess;
 use Kurt\Modules\ResourceLibrary\Access\PermissionResolver;
+use Kurt\Modules\ResourceLibrary\Access\ResourceLibraryAccess;
 use Kurt\Modules\ResourceLibrary\Enums\Capability;
 use Kurt\Modules\ResourceLibrary\Enums\FolderVisibility;
 use Kurt\Modules\ResourceLibrary\Models\Folder;
@@ -58,7 +58,7 @@ it('PINS additive resolution: a farther higher grant is NOT shadowed by a closer
         ->forUser($this->user->id, Capability::View, cascade: true)
         ->create(['folder_id' => $parent->id]);
 
-    $access = new LibraryAccess(app(PermissionResolver::class));
+    $access = new ResourceLibraryAccess(app(PermissionResolver::class));
 
     // Resolution takes the MAX across the whole chain, so the grandparent's
     // higher Manage grant wins over the parent's closer View grant.
@@ -89,7 +89,7 @@ it('PINS the exact downgrade case: grandparent user:Manage + parent Everyone:Vie
         ->forEveryone(Capability::View, cascade: true)
         ->create(['folder_id' => $parent->id]);
 
-    $access = new LibraryAccess(app(PermissionResolver::class));
+    $access = new ResourceLibraryAccess(app(PermissionResolver::class));
 
     // The user keeps Manage; the closer Everyone:View does not cap them.
     expect($access->check($this->user, $leaf, Capability::Manage))->toBeTrue();
@@ -109,7 +109,7 @@ it('PINS same-folder rows are still compared by rank (highest wins on one folder
         ->forUser($this->user->id, Capability::Manage)
         ->create(['folder_id' => $folder->id]);
 
-    $access = new LibraryAccess(app(PermissionResolver::class));
+    $access = new ResourceLibraryAccess(app(PermissionResolver::class));
 
     expect($access->check($this->user, $folder, Capability::Manage))->toBeTrue();
 });
@@ -130,7 +130,7 @@ it('PINS Restricted visibility still inherits an ancestor cascade', function () 
         ->forUser($this->user->id, Capability::Download, cascade: true)
         ->create(['folder_id' => $parent->id]);
 
-    $access = new LibraryAccess(app(PermissionResolver::class));
+    $access = new ResourceLibraryAccess(app(PermissionResolver::class));
 
     // Inherited from the Restricted parent even though the child is Restricted.
     expect($access->check($this->user, $child, Capability::Download))->toBeTrue();
@@ -146,7 +146,7 @@ it('PINS the Restricted fallback denies only when nothing matched in the chain',
         ->child($parent)
         ->create(['owner_id' => $this->owner->id]);
 
-    $access = new LibraryAccess(app(PermissionResolver::class));
+    $access = new ResourceLibraryAccess(app(PermissionResolver::class));
 
     expect($access->check($this->user, $child, Capability::View))->toBeFalse();
 });

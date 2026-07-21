@@ -6,7 +6,7 @@ namespace Kurt\Modules\ResourceLibrary\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Kurt\Modules\Core\Http\Controllers\ApiController;
-use Kurt\Modules\ResourceLibrary\Access\LibraryAccess;
+use Kurt\Modules\ResourceLibrary\Access\ResourceLibraryAccess;
 use Kurt\Modules\ResourceLibrary\Http\Requests\StoreFolderPermissionRequest;
 use Kurt\Modules\ResourceLibrary\Http\Resources\FolderPermissionResource;
 use Kurt\Modules\ResourceLibrary\Models\Folder;
@@ -18,7 +18,7 @@ use Kurt\Modules\ResourceLibrary\Models\FolderPermission;
  */
 final class FolderPermissionController extends ApiController
 {
-    public function __construct(private readonly LibraryAccess $access) {}
+    public function __construct(private readonly ResourceLibraryAccess $access) {}
 
     public function index(Folder $folder): JsonResponse
     {

@@ -6,13 +6,13 @@ namespace Kurt\Modules\ResourceLibrary\Providers;
 
 use Illuminate\Contracts\Auth\Access\Gate;
 use Kurt\Modules\Core\Providers\PackageServiceProvider;
-use Kurt\Modules\ResourceLibrary\Access\LibraryAccess;
 use Kurt\Modules\ResourceLibrary\Access\PermissionResolver;
+use Kurt\Modules\ResourceLibrary\Access\ResourceLibraryAccess;
 use Kurt\Modules\ResourceLibrary\Console\Commands\DemoCommand;
 use Kurt\Modules\ResourceLibrary\Console\Commands\PruneVersionsCommand;
 use Kurt\Modules\ResourceLibrary\Console\Commands\RebuildPathsCommand;
 use Kurt\Modules\ResourceLibrary\Console\Commands\RecountCommand;
-use Kurt\Modules\ResourceLibrary\Contracts\LibrarySubjectResolver;
+use Kurt\Modules\ResourceLibrary\Contracts\ResourceLibrarySubjectResolver;
 use Kurt\Modules\ResourceLibrary\Models\Folder;
 use Kurt\Modules\ResourceLibrary\Models\Item;
 use Kurt\Modules\ResourceLibrary\Models\ItemVersion;
@@ -47,15 +47,15 @@ final class ResourceLibraryServiceProvider extends PackageServiceProvider
 
     public function packageRegistered(): void
     {
-        $this->app->singleton(LibrarySubjectResolver::class, function () {
-            /** @var class-string<LibrarySubjectResolver> $class */
+        $this->app->singleton(ResourceLibrarySubjectResolver::class, function () {
+            /** @var class-string<ResourceLibrarySubjectResolver> $class */
             $class = (string) config('resource-library.subject_resolver');
 
             return $this->app->make($class);
         });
 
         $this->app->singleton(PermissionResolver::class);
-        $this->app->scoped(LibraryAccess::class);
+        $this->app->scoped(ResourceLibraryAccess::class);
     }
 
     public function packageBooted(): void

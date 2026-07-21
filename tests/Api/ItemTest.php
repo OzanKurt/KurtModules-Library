@@ -22,7 +22,7 @@ beforeEach(function () {
 
 it('creates an item in a folder the user manages', function () {
     $this->actingAs($this->manager)
-        ->postJson('api/library/items', [
+        ->postJson('api/resource-library/items', [
             'folder_id' => $this->folder->id,
             'title' => 'Getting Started',
             'kind' => ItemKind::ExternalUrl->value,
@@ -36,7 +36,7 @@ it('creates an item in a folder the user manages', function () {
 
 it('403s item creation for a viewer', function () {
     $this->actingAs($this->viewer)
-        ->postJson('api/library/items', [
+        ->postJson('api/resource-library/items', [
             'folder_id' => $this->folder->id,
             'title' => 'Nope',
             'kind' => ItemKind::Document->value,
@@ -49,7 +49,7 @@ it('shows an item to a viewer and records the access', function () {
         ->create(['folder_id' => $this->folder->id, 'owner_id' => $this->owner->id]);
 
     $this->actingAs($this->viewer)
-        ->getJson("api/library/items/{$item->id}")
+        ->getJson("api/resource-library/items/{$item->id}")
         ->assertOk()
         ->assertJsonPath('data.id', $item->id)
         ->assertJsonPath('data.resource.type', 'external_url')
@@ -61,7 +61,7 @@ it('403s showing an item in a folder the subject cannot view', function () {
     $item = Item::factory()->published()->create(['folder_id' => $secret->id, 'owner_id' => $this->owner->id]);
 
     $this->actingAs($this->viewer)
-        ->getJson("api/library/items/{$item->id}")
+        ->getJson("api/resource-library/items/{$item->id}")
         ->assertForbidden();
 });
 
@@ -69,8 +69,8 @@ it('hides draft items from viewers but shows them to managers', function () {
     Item::factory()->published()->create(['folder_id' => $this->folder->id, 'owner_id' => $this->owner->id, 'title' => ['en' => 'Published']]);
     Item::factory()->create(['folder_id' => $this->folder->id, 'owner_id' => $this->owner->id, 'title' => ['en' => 'Draft'], 'published_at' => null]);
 
-    $viewerCount = count($this->actingAs($this->viewer)->getJson("api/library/folders/{$this->folder->id}/items")->assertOk()->json('data'));
-    $managerCount = count($this->actingAs($this->manager)->getJson("api/library/folders/{$this->folder->id}/items")->assertOk()->json('data'));
+    $viewerCount = count($this->actingAs($this->viewer)->getJson("api/resource-library/folders/{$this->folder->id}/items")->assertOk()->json('data'));
+    $managerCount = count($this->actingAs($this->manager)->getJson("api/resource-library/folders/{$this->folder->id}/items")->assertOk()->json('data'));
 
     expect($viewerCount)->toBe(1)
         ->and($managerCount)->toBe(2);
@@ -80,7 +80,7 @@ it('403s the item listing when the subject cannot view the folder', function () 
     $secret = Folder::factory()->visibility(FolderVisibility::Restricted)->create(['owner_id' => $this->owner->id]);
 
     $this->actingAs($this->viewer)
-        ->getJson("api/library/folders/{$secret->id}/items")
+        ->getJson("api/resource-library/folders/{$secret->id}/items")
         ->assertForbidden();
 });
 
@@ -88,7 +88,7 @@ it('updates and publishes an item for a manager', function () {
     $item = Item::factory()->create(['folder_id' => $this->folder->id, 'owner_id' => $this->owner->id, 'published_at' => null]);
 
     $this->actingAs($this->manager)
-        ->patchJson("api/library/items/{$item->id}", ['title' => 'Renamed', 'published' => true])
+        ->patchJson("api/resource-library/items/{$item->id}", ['title' => 'Renamed', 'published' => true])
         ->assertOk()
         ->assertJsonPath('data.title', 'Renamed');
 
@@ -98,15 +98,15 @@ it('updates and publishes an item for a manager', function () {
 it('403s item update/delete for a viewer', function () {
     $item = Item::factory()->create(['folder_id' => $this->folder->id, 'owner_id' => $this->owner->id]);
 
-    $this->actingAs($this->viewer)->patchJson("api/library/items/{$item->id}", ['title' => 'x'])->assertForbidden();
-    $this->actingAs($this->viewer)->deleteJson("api/library/items/{$item->id}")->assertForbidden();
+    $this->actingAs($this->viewer)->patchJson("api/resource-library/items/{$item->id}", ['title' => 'x'])->assertForbidden();
+    $this->actingAs($this->viewer)->deleteJson("api/resource-library/items/{$item->id}")->assertForbidden();
 });
 
 it('deletes an item for a manager', function () {
     $item = Item::factory()->create(['folder_id' => $this->folder->id, 'owner_id' => $this->owner->id]);
 
     $this->actingAs($this->manager)
-        ->deleteJson("api/library/items/{$item->id}")
+        ->deleteJson("api/resource-library/items/{$item->id}")
         ->assertNoContent();
 
     expect(Item::query()->find($item->id))->toBeNull();

@@ -7,7 +7,7 @@ namespace Kurt\Modules\ResourceLibrary\Contracts;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Kurt\Modules\ResourceLibrary\Values\Subject;
 
-interface LibrarySubjectResolver
+interface ResourceLibrarySubjectResolver
 {
     /** @return array<int, Subject> */
     public function subjects(?Authenticatable $user): array;

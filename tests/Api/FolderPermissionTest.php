@@ -22,7 +22,7 @@ it('lets a manager grant access (share) and it takes effect', function () {
     $newUser = StubUser::create(['email' => 'new@example.com']);
 
     $this->actingAs($this->manager)
-        ->postJson("api/library/folders/{$this->folder->id}/permissions", [
+        ->postJson("api/resource-library/folders/{$this->folder->id}/permissions", [
             'subject_type' => 'user',
             'subject_value' => (string) $newUser->id,
             'capability' => 'download',
@@ -35,17 +35,17 @@ it('lets a manager grant access (share) and it takes effect', function () {
     expect(FolderPermission::query()->where('folder_id', $this->folder->id)->where('subject_value', (string) $newUser->id)->exists())->toBeTrue();
 
     $this->actingAs($newUser)
-        ->getJson("api/library/folders/{$this->folder->id}")
+        ->getJson("api/resource-library/folders/{$this->folder->id}")
         ->assertOk();
 });
 
 it('requires manage to list or grant permissions (viewer is 403)', function () {
     $this->actingAs($this->viewer)
-        ->getJson("api/library/folders/{$this->folder->id}/permissions")
+        ->getJson("api/resource-library/folders/{$this->folder->id}/permissions")
         ->assertForbidden();
 
     $this->actingAs($this->viewer)
-        ->postJson("api/library/folders/{$this->folder->id}/permissions", [
+        ->postJson("api/resource-library/folders/{$this->folder->id}/permissions", [
             'subject_type' => 'everyone',
             'capability' => 'view',
         ])
@@ -54,7 +54,7 @@ it('requires manage to list or grant permissions (viewer is 403)', function () {
 
 it('lists the grants on a folder for a manager', function () {
     $grants = $this->actingAs($this->manager)
-        ->getJson("api/library/folders/{$this->folder->id}/permissions")
+        ->getJson("api/resource-library/folders/{$this->folder->id}/permissions")
         ->assertOk()
         ->json('data');
 
@@ -65,7 +65,7 @@ it('revokes a grant for a manager', function () {
     $grant = FolderPermission::factory()->forEveryone(Capability::View)->create(['folder_id' => $this->folder->id]);
 
     $this->actingAs($this->manager)
-        ->deleteJson("api/library/folders/{$this->folder->id}/permissions/{$grant->id}")
+        ->deleteJson("api/resource-library/folders/{$this->folder->id}/permissions/{$grant->id}")
         ->assertNoContent();
 
     expect(FolderPermission::query()->find($grant->id))->toBeNull();
@@ -76,10 +76,10 @@ it('404s revoking a grant that belongs to another folder', function () {
     $grant = FolderPermission::factory()->forEveryone(Capability::View)->create(['folder_id' => $other->id]);
 
     $this->actingAs($this->manager)
-        ->deleteJson("api/library/folders/{$this->folder->id}/permissions/{$grant->id}")
+        ->deleteJson("api/resource-library/folders/{$this->folder->id}/permissions/{$grant->id}")
         ->assertNotFound();
 });
 
 it('blocks guests from the grant surface', function () {
-    $this->getJson("api/library/folders/{$this->folder->id}/permissions")->assertUnauthorized();
+    $this->getJson("api/resource-library/folders/{$this->folder->id}/permissions")->assertUnauthorized();
 });

@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Kurt\Modules\ResourceLibrary\Access\LibraryAccess;
 use Kurt\Modules\ResourceLibrary\Access\PermissionResolver;
+use Kurt\Modules\ResourceLibrary\Access\ResourceLibraryAccess;
 use Kurt\Modules\ResourceLibrary\Enums\Capability;
 use Kurt\Modules\ResourceLibrary\Enums\FolderVisibility;
 use Kurt\Modules\ResourceLibrary\Models\Folder;
@@ -29,7 +29,7 @@ it('resolves a role grant for a user in that role when a role source is configur
         ->forRole('editors', Capability::Download)
         ->create(['folder_id' => $folder->id]);
 
-    $access = new LibraryAccess(app(PermissionResolver::class));
+    $access = new ResourceLibraryAccess(app(PermissionResolver::class));
 
     expect($access->check($this->member, $folder, Capability::View))->toBeTrue();
     expect($access->check($this->member, $folder, Capability::Download))->toBeTrue();
@@ -45,7 +45,7 @@ it('does not resolve a role grant for a user outside that role', function () {
         ->forRole('editors', Capability::Download)
         ->create(['folder_id' => $folder->id]);
 
-    $access = new LibraryAccess(app(PermissionResolver::class));
+    $access = new ResourceLibraryAccess(app(PermissionResolver::class));
 
     expect($access->check($this->outsider, $folder, Capability::View))->toBeFalse();
 });
@@ -63,7 +63,7 @@ it('cascades a role grant from an ancestor folder to a descendant', function () 
         ->forRole('editors', Capability::Download, cascade: true)
         ->create(['folder_id' => $parent->id]);
 
-    $access = new LibraryAccess(app(PermissionResolver::class));
+    $access = new ResourceLibraryAccess(app(PermissionResolver::class));
 
     expect($access->check($this->member, $child, Capability::Download))->toBeTrue();
 });
@@ -79,7 +79,7 @@ it('leaves a role grant inert when no role source is configured (backward compat
         ->forRole('editors', Capability::Download)
         ->create(['folder_id' => $folder->id]);
 
-    $access = new LibraryAccess(app(PermissionResolver::class));
+    $access = new ResourceLibraryAccess(app(PermissionResolver::class));
 
     expect($access->check($this->member, $folder, Capability::View))->toBeFalse();
 });

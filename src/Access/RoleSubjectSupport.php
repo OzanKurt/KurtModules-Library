@@ -15,7 +15,7 @@ use Kurt\Modules\ResourceLibrary\Enums\PermissionSubjectType;
  *
  *  1. Configure a role source callable at `resource-library.roles.resolver`,
  *     which the default resolver reads to emit `role` subjects; or
- *  2. Bind a custom LibrarySubjectResolver via
+ *  2. Bind a custom ResourceLibrarySubjectResolver via
  *     `config('resource-library.subject_resolver')` that emits `role` subjects.
  *
  * The Filament ACL relation managers use this to hide the `role` option (and

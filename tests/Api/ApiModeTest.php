@@ -16,5 +16,5 @@ it('applies the configured prefix', function () {
     $route = Route::getRoutes()->getByName('resource-library.api.folders.index');
 
     expect($route)->not->toBeNull()
-        ->and($route->uri())->toBe('api/library/folders');
+        ->and($route->uri())->toBe('api/resource-library/folders');
 });
