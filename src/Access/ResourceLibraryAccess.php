@@ -9,7 +9,7 @@ use Kurt\Modules\ResourceLibrary\Enums\Capability;
 use Kurt\Modules\ResourceLibrary\Models\Folder;
 use Kurt\Modules\ResourceLibrary\Models\Item;
 
-final class LibraryAccess
+final class ResourceLibraryAccess
 {
     /** @var array<string, ?Capability> */
     private array $cache = [];

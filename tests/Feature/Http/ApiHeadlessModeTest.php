@@ -12,5 +12,5 @@ it('does not register API routes in headless mode', function () {
 });
 
 it('404s the API endpoints in headless mode', function () {
-    $this->getJson('api/library/folders')->assertNotFound();
+    $this->getJson('api/resource-library/folders')->assertNotFound();
 });

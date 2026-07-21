@@ -22,7 +22,7 @@ function grant(Folder $folder, StubUser $user, Capability $capability): void
 
 it('lets a user create a root folder and owns/manages it', function () {
     $this->actingAs($this->manager)
-        ->postJson('api/library/folders', ['name' => 'My Library', 'visibility' => 'private'])
+        ->postJson('api/resource-library/folders', ['name' => 'My Library', 'visibility' => 'private'])
         ->assertCreated()
         ->assertJsonPath('data.name', 'My Library')
         ->assertJsonPath('data.owner_id', $this->manager->id);
@@ -33,7 +33,7 @@ it('requires manage on the parent to create a child folder', function () {
     grant($parent, $this->viewer, Capability::View);
 
     $this->actingAs($this->viewer)
-        ->postJson('api/library/folders', ['name' => 'Child', 'parent_id' => $parent->id])
+        ->postJson('api/resource-library/folders', ['name' => 'Child', 'parent_id' => $parent->id])
         ->assertForbidden();
 });
 
@@ -42,7 +42,7 @@ it('allows creating a child folder when the user manages the parent', function (
     grant($parent, $this->manager, Capability::Manage);
 
     $this->actingAs($this->manager)
-        ->postJson('api/library/folders', ['name' => 'Child', 'parent_id' => $parent->id])
+        ->postJson('api/resource-library/folders', ['name' => 'Child', 'parent_id' => $parent->id])
         ->assertCreated()
         ->assertJsonPath('data.parent_id', $parent->id);
 });
@@ -52,18 +52,18 @@ it('403s update/delete for a viewer and succeeds for a manager', function () {
     grant($folder, $this->viewer, Capability::View);
 
     $this->actingAs($this->viewer)
-        ->patchJson("api/library/folders/{$folder->id}", ['name' => 'Nope'])
+        ->patchJson("api/resource-library/folders/{$folder->id}", ['name' => 'Nope'])
         ->assertForbidden();
 
     $this->actingAs($this->viewer)
-        ->deleteJson("api/library/folders/{$folder->id}")
+        ->deleteJson("api/resource-library/folders/{$folder->id}")
         ->assertForbidden();
 
     $manageable = Folder::factory()->visibility(FolderVisibility::Restricted)->create(['owner_id' => $this->owner->id]);
     grant($manageable, $this->manager, Capability::Manage);
 
     $this->actingAs($this->manager)
-        ->patchJson("api/library/folders/{$manageable->id}", ['name' => 'Renamed'])
+        ->patchJson("api/resource-library/folders/{$manageable->id}", ['name' => 'Renamed'])
         ->assertOk()
         ->assertJsonPath('data.name', 'Renamed');
 });
@@ -73,7 +73,7 @@ it('deletes a folder the user manages', function () {
     grant($folder, $this->manager, Capability::Manage);
 
     $this->actingAs($this->manager)
-        ->deleteJson("api/library/folders/{$folder->id}")
+        ->deleteJson("api/resource-library/folders/{$folder->id}")
         ->assertNoContent();
 
     expect(Folder::query()->find($folder->id))->toBeNull();
@@ -86,7 +86,7 @@ it('moves a folder only when the user manages BOTH source and target', function 
     grant($target, $this->manager, Capability::Manage);
 
     $this->actingAs($this->manager)
-        ->postJson("api/library/folders/{$source->id}/move", ['parent_id' => $target->id])
+        ->postJson("api/resource-library/folders/{$source->id}/move", ['parent_id' => $target->id])
         ->assertOk()
         ->assertJsonPath('data.parent_id', $target->id);
 
@@ -100,7 +100,7 @@ it('403s a move when the user cannot manage the target', function () {
     // No grant on target.
 
     $this->actingAs($this->manager)
-        ->postJson("api/library/folders/{$source->id}/move", ['parent_id' => $target->id])
+        ->postJson("api/resource-library/folders/{$source->id}/move", ['parent_id' => $target->id])
         ->assertForbidden();
 });
 
@@ -110,13 +110,13 @@ it('403s a move when the user cannot manage the source', function () {
     grant($target, $this->manager, Capability::Manage);
 
     $this->actingAs($this->manager)
-        ->postJson("api/library/folders/{$source->id}/move", ['parent_id' => $target->id])
+        ->postJson("api/resource-library/folders/{$source->id}/move", ['parent_id' => $target->id])
         ->assertForbidden();
 });
 
 it('blocks guests from writing', function () {
     $folder = Folder::factory()->visibility(FolderVisibility::Public)->create(['owner_id' => $this->owner->id]);
 
-    $this->postJson('api/library/folders', ['name' => 'X'])->assertUnauthorized();
-    $this->deleteJson("api/library/folders/{$folder->id}")->assertUnauthorized();
+    $this->postJson('api/resource-library/folders', ['name' => 'X'])->assertUnauthorized();
+    $this->deleteJson("api/resource-library/folders/{$folder->id}")->assertUnauthorized();
 });

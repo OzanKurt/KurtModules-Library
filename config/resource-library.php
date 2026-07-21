@@ -18,7 +18,7 @@ return [
     // API never leaks a folder or item the current subject cannot view.
     'http' => [
         'mode' => env('RESOURCE_LIBRARY_HTTP_MODE', 'headless'),
-        'prefix' => 'api/library',
+        'prefix' => 'api/resource-library',
         'middleware' => ['api'],
         'auth_middleware' => ['auth'],
         'rate_limit' => '60,1',

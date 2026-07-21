@@ -6,12 +6,12 @@ All notable changes to this project will be documented in this file. The format 
 
 ### Added
 
-- Out-of-the-box JSON REST API built on the Core "API kit" (Core `^2.2`), gated by `resource-library.http.mode` (`headless` by default; enable with `RESOURCE_LIBRARY_HTTP_MODE=api`). New `http` config block (`prefix` `api/library`, base `middleware`, per-route `auth_middleware`, `rate_limit`) and `ResourceLibraryServiceProvider::registerModuleApi()` wiring in `packageBooted()`.
+- Out-of-the-box JSON REST API built on the Core "API kit" (Core `^2.2`), gated by `resource-library.http.mode` (`headless` by default; enable with `RESOURCE_LIBRARY_HTTP_MODE=api`). New `http` config block (`prefix` `api/resource-library`, base `middleware`, per-route `auth_middleware`, `rate_limit`) and `ResourceLibraryServiceProvider::registerModuleApi()` wiring in `packageBooted()`.
   - Folders: index (root or `?parent=`), show, store, update, destroy, `move`, plus per-folder ACL-grant management (`GET/POST/DELETE folders/{folder}/permissions`).
   - Items: index (within a folder), show (resolves file/video-link/document/external-url), store, update (with publish toggle), destroy, plus versions list / add version.
   - Thin controllers over the existing domain services; `FormRequest` validation; per-model API Resources; index sort/filter/pagination via `HandlesApiQuery`.
   - **ACL is enforced on every read and write.** Reads are permission-scoped through the Folder/Item policies (`PermissionResolver`): a subject only ever sees folders/items they may view, siblings they lack access to are never leaked, and a guest sees only `public`/`everyone`-granted content. Writes require the corresponding capability (`manage`); moves require `manage` on both source and target.
-- Config-driven role subjects for the default resolver. Set `resource-library.roles.resolver` to a callable (e.g. `fn ($user) => $user->roles->pluck('id')`) and `DefaultSubjectResolver` now emits a `Subject(Role, …)` per returned id, so `role` permission grants resolve out of the box without shipping a custom `LibrarySubjectResolver`. Ids are cast to strings and matched against `FolderPermission.subject_value`.
+- Config-driven role subjects for the default resolver. Set `resource-library.roles.resolver` to a callable (e.g. `fn ($user) => $user->roles->pluck('id')`) and `DefaultSubjectResolver` now emits a `Subject(Role, …)` per returned id, so `role` permission grants resolve out of the box without shipping a custom `ResourceLibrarySubjectResolver`. Ids are cast to strings and matched against `FolderPermission.subject_value`.
 - The Filament ACL relation managers (v3/v4/v5) automatically re-enable the `role` subject-type option when a role source is configured (via `RoleSubjectSupport::enabled()`), reversing the hide when roles are wired.
 
 ### Notes
@@ -63,23 +63,23 @@ See [`UPGRADE-3.0.md`](./UPGRADE-3.0.md) for migration steps.
 
 ## [2.0.0] - 2026-05-28
 
-Initial release of the `ozankurt/laravel-modules-library` package.
+Initial release of the `ozankurt/laravel-modules-resource-library` package.
 
 ### Added
 
 - Models: `Folder` (translatable, sluggable, soft-deletes), `Item` (translatable, sluggable, soft-deletes, `HasMedia`), `ItemVersion`, `Tag` (translatable), `FolderPermission`, `AccessLog`.
 - Enums: `FolderVisibility` (Public, Restricted, Private), `ItemKind` (VideoLink, File, Document, ExternalUrl), `PermissionSubjectType` (User, Role, Everyone), `Capability` (View, Download, Manage), `AccessAction` (View, Download).
-- ACL service: `LibraryAccess::check(?Authenticatable, Folder|Item, Capability)` backed by `PermissionResolver` that walks ancestry + visibility fallback. Per-request memoised.
-- `LibrarySubjectResolver` contract + `DefaultSubjectResolver` (returns `Everyone` + `User(id)`). Override via `config('library.subject_resolver')`.
+- ACL service: `ResourceLibraryAccess::check(?Authenticatable, Folder|Item, Capability)` backed by `PermissionResolver` that walks ancestry + visibility fallback. Per-request memoised.
+- `ResourceLibrarySubjectResolver` contract + `DefaultSubjectResolver` (returns `Everyone` + `User(id)`). Override via `config('resource-library.subject_resolver')`.
 - `Folder::moveTo(?Folder $newParent)` — single-query subtree path/depth rewrite.
 - `Item::newVersion(array $payload, Model $by): ItemVersion` — increments version, sets `current_version_id`.
 - `Item::recordAccess(?Model $user, AccessAction $action)` — writes audit row and bumps download/view counters per config.
-- Console commands: `library:recount`, `library:prune-versions`, `library:rebuild-paths`, `library:demo`.
+- Console commands: `resource-library:recount`, `resource-library:prune-versions`, `resource-library:rebuild-paths`, `resource-library:demo`.
 - Events: `FolderCreated/Updated/Deleted/Moved`, `FolderPermissionChanged`, `ItemCreated/Updated/Deleted/Published/Unpublished`, `ItemAccessed`, `ItemVersionCreated`, `TagCreated/Deleted`.
 - Observers: `FolderObserver` (auto-builds `path` + `depth` on create), `ItemObserver` (maintains `Folder.item_count`), `ItemVersionObserver`.
-- Policies: `FolderPolicy`, `ItemPolicy` — delegate to `LibraryAccess`. `canAdminLibrary` global gate bypasses.
-- Migrations: `library_folders`, `library_item_versions`, `library_items`, `library_tags`, `library_item_tag`, `library_folder_permissions`, `library_access_log`.
-- Pest 3 test suite covering ACL matrix, `moveTo`, versioning, access log toggles, `library:recount`.
+- Policies: `FolderPolicy`, `ItemPolicy` — delegate to `ResourceLibraryAccess`. `canAdminResourceLibrary` global gate bypasses.
+- Migrations: `resource_library_folders`, `resource_library_item_versions`, `resource_library_items`, `resource_library_tags`, `resource_library_item_tag`, `resource_library_folder_permissions`, `resource_library_access_log`.
+- Pest 3 test suite covering ACL matrix, `moveTo`, versioning, access log toggles, `resource-library:recount`.
 - GitHub Actions CI (Laravel 12, PHP 8.4).
 
 ### Deferred

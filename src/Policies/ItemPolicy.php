@@ -6,13 +6,13 @@ namespace Kurt\Modules\ResourceLibrary\Policies;
 
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Kurt\Modules\ResourceLibrary\Access\LibraryAccess;
+use Kurt\Modules\ResourceLibrary\Access\ResourceLibraryAccess;
 use Kurt\Modules\ResourceLibrary\Enums\Capability;
 use Kurt\Modules\ResourceLibrary\Models\Item;
 
 final class ItemPolicy
 {
-    public function __construct(private readonly LibraryAccess $access) {}
+    public function __construct(private readonly ResourceLibraryAccess $access) {}
 
     public function before(?Authenticatable $user, string $ability): ?bool
     {
@@ -22,7 +22,7 @@ final class ItemPolicy
 
         /** @var Gate $gate */
         $gate = app(Gate::class);
-        if ($gate->forUser($user)->has('canAdminLibrary') && $gate->forUser($user)->allows('canAdminLibrary')) {
+        if ($gate->forUser($user)->has('canAdminResourceLibrary') && $gate->forUser($user)->allows('canAdminResourceLibrary')) {
             return true;
         }
 

@@ -40,9 +40,9 @@ php artisan migrate
 
 - Models: `Folder`, `Item`, `ItemVersion`, `Tag`, `FolderPermission`, `AccessLog`.
 - Enums: `FolderVisibility`, `ItemKind`, `PermissionSubjectType`, `Capability`, `AccessAction`.
-- Access service: `Kurt\Modules\ResourceLibrary\Access\LibraryAccess::check($user, Folder|Item, Capability)`.
+- Access service: `Kurt\Modules\ResourceLibrary\Access\ResourceLibraryAccess::check($user, Folder|Item, Capability)`.
 - `Folder::moveTo(?Folder $newParent)` — rewrites a whole subtree's `path` + `depth` with a single anchored `UPDATE` (plus the moved folder's own row), independent of subtree size. Guards against cycles and destination slug collisions with a `CannotMoveFolderException`.
-- Policies (`FolderPolicy`, `ItemPolicy`) that delegate to `LibraryAccess`. Global `canAdminLibrary` gate bypasses everything.
+- Policies (`FolderPolicy`, `ItemPolicy`) that delegate to `ResourceLibraryAccess`. Global `canAdminResourceLibrary` gate bypasses everything.
 - Console commands: `resource-library:recount`, `resource-library:prune-versions`, `resource-library:rebuild-paths`, `resource-library:demo`.
 - Domain events: `FolderCreated/Updated/Deleted/Moved`, `ItemCreated/Updated/Published/Unpublished/Deleted`, `ItemVersionCreated`, `ItemAccessed`, `TagCreated/Deleted`, `FolderPermissionChanged`.
 
@@ -83,11 +83,11 @@ store role grants using the same id the resolver returns.
 
 ### Custom resolver (full control)
 
-Apps that need more than a role-id list write a small `LibrarySubjectResolver`
+Apps that need more than a role-id list write a small `ResourceLibrarySubjectResolver`
 and bind its FQCN via `config('resource-library.subject_resolver')`:
 
 ```php
-final class AppSubjectResolver implements LibrarySubjectResolver
+final class AppSubjectResolver implements ResourceLibrarySubjectResolver
 {
     public function subjects(?Authenticatable $user): array
     {
@@ -116,7 +116,7 @@ final class AppSubjectResolver implements LibrarySubjectResolver
 
 ## ACL resolution
 
-`LibraryAccess::check($user, Folder|Item, Capability)` resolves the effective
+`ResourceLibraryAccess::check($user, Folder|Item, Capability)` resolves the effective
 capability with an **additive, most-permissive-wins** model:
 
 - The resolver walks the target folder **and its entire ancestor chain** and
@@ -150,7 +150,7 @@ It is **safe-by-default**: nothing is registered until you opt in.
 > subject may view, and show endpoints `403` when the subject lacks the `view`
 > capability. Writes check the corresponding capability (`manage`) before
 > acting. A guest only ever sees `public` / `everyone`-granted content; there is
-> no public-anonymous library. This is the whole point of the module, so it is
+> no public-anonymous resource library. This is the whole point of the module, so it is
 > not optional or configurable away.
 
 ### Enabling it
@@ -167,7 +167,7 @@ route group:
 ```php
 'http' => [
     'mode' => env('RESOURCE_LIBRARY_HTTP_MODE', 'headless'), // headless | api | ui
-    'prefix' => 'api/library',
+    'prefix' => 'api/resource-library',
     'middleware' => ['api'],
     'auth_middleware' => ['auth'], // appended to write routes + the grant surface
     'rate_limit' => '60,1',        // maxAttempts,decayMinutes (throttle "resource-library-api")
@@ -182,7 +182,7 @@ ACL. Write routes and the ACL-grant surface additionally require the module
 
 ### Endpoints
 
-All paths are under the configured prefix (`api/library` by default). Named
+All paths are under the configured prefix (`api/resource-library` by default). Named
 routes use the `resource-library.api.` prefix.
 
 | Method | Path | Action | ACL |

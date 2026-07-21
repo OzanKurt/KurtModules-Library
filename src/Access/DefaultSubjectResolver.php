@@ -6,11 +6,11 @@ namespace Kurt\Modules\ResourceLibrary\Access;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Support\Arrayable;
-use Kurt\Modules\ResourceLibrary\Contracts\LibrarySubjectResolver;
+use Kurt\Modules\ResourceLibrary\Contracts\ResourceLibrarySubjectResolver;
 use Kurt\Modules\ResourceLibrary\Enums\PermissionSubjectType;
 use Kurt\Modules\ResourceLibrary\Values\Subject;
 
-final class DefaultSubjectResolver implements LibrarySubjectResolver
+final class DefaultSubjectResolver implements ResourceLibrarySubjectResolver
 {
     /**
      * @return array<int, Subject>
