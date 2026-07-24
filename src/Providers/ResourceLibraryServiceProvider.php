@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Kurt\Modules\ResourceLibrary\Providers;
 
 use Illuminate\Contracts\Auth\Access\Gate;
+use Kurt\Modules\Core\Modules\ModuleManifest;
 use Kurt\Modules\Core\Providers\PackageServiceProvider;
 use Kurt\Modules\ResourceLibrary\Access\PermissionResolver;
 use Kurt\Modules\ResourceLibrary\Access\ResourceLibraryAccess;
@@ -58,8 +59,17 @@ final class ResourceLibraryServiceProvider extends PackageServiceProvider
         $this->app->scoped(ResourceLibraryAccess::class);
     }
 
+    protected function moduleManifest(): ?ModuleManifest
+    {
+        return ModuleManifest::make('resource-library')
+            ->name('Resource Library')
+            ->description('SaaS resource library: nested folders with per-folder permissions, versioned items (video link, file, document, URL).');
+    }
+
     public function packageBooted(): void
     {
+        parent::packageBooted();
+
         Folder::observe(FolderObserver::class);
         Item::observe(ItemObserver::class);
         ItemVersion::observe(ItemVersionObserver::class);
