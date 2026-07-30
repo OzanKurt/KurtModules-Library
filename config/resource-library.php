@@ -34,6 +34,21 @@ return [
     'versions' => [
         'keep_old' => 10,
     ],
+    // Cross-request ACL cache (Core "module cache" convention). The per-folder
+    // capability resolution (PermissionResolver::highestCapability) walks the
+    // ancestor chain and is the family's hottest read; this layer caches it
+    // across requests using a generational cache so a permission or move change
+    // invalidates the whole ACL keyspace in O(1) (see the FolderPermissionChanged
+    // / FolderMoved bump wiring). SECURITY: caching is FAIL-SAFE — a disabled or
+    // erroring cache falls through to a LIVE resolution and never grants on
+    // error. Keep the TTL short: it is only a defense-in-depth floor for any
+    // entry that escapes a bump.
+    'cache' => [
+        'enabled' => (bool) env('RESOURCE_LIBRARY_CACHE_ENABLED', true),
+        'store' => env('RESOURCE_LIBRARY_CACHE_STORE'),
+        'prefix' => 'resource-library',
+        'ttl' => (int) env('RESOURCE_LIBRARY_CACHE_TTL', 300),
+    ],
     'subject_resolver' => DefaultSubjectResolver::class,
     'roles' => [
         // Role source for the default resolver. Supply a callable that receives
