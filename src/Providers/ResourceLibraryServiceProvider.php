@@ -65,7 +65,7 @@ final class ResourceLibraryServiceProvider extends PackageServiceProvider
         $this->app->scoped(ResourceLibraryAccess::class);
     }
 
-    protected function moduleManifest(): ?ModuleManifest
+    protected function moduleManifest(): ModuleManifest
     {
         return ModuleManifest::make('resource-library')
             ->name('Resource Library')
