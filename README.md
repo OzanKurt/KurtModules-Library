@@ -11,7 +11,7 @@ The rename disambiguates from the new `ozankurt/laravel-modules-media-library` p
 ## Requirements
 
 - PHP 8.4+
-- Laravel 12.x or 13.x
+- Laravel 13.x
 - `ozankurt/laravel-modules-core` v2.x
 
 ## Installation
