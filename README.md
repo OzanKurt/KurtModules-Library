@@ -1,5 +1,7 @@
 # laravel-modules-resource-library
 
+[![tests](https://github.com/OzanKurt/laravel-modules-resource-library/actions/workflows/tests.yml/badge.svg)](https://github.com/OzanKurt/laravel-modules-resource-library/actions/workflows/tests.yml)
+
 SaaS **resource library** module for Laravel: nested folders with per-folder permissions, versioned items, mixed kinds (video link, file, document, external URL), translatable content, Spatie medialibrary, access logging.
 
 ## v3.0 rename
@@ -10,8 +12,8 @@ The rename disambiguates from the new `ozankurt/laravel-modules-media-library` p
 
 ## Requirements
 
-- PHP 8.4+
-- Laravel 13.x
+- PHP `^8.4`
+- Laravel `^13.0`
 - `ozankurt/laravel-modules-core` v2.x
 
 ## Installation
@@ -266,6 +268,19 @@ enforce the length. In practice 1024 characters comfortably supports ~24 levels
 of nesting at ~40-char slugs — deeper trees should use shorter slugs. The bound
 is enforced by the `2026_07_20_000100_widen_resource_library_folder_path`
 migration.
+
+## Testing
+
+```bash
+composer install
+vendor/bin/pint --test
+vendor/bin/phpstan analyse --memory-limit=2G
+vendor/bin/pest
+```
+
+CI runs the same checks on every push and pull request
+(`.github/workflows/tests.yml`), against PHP 8.4 / Laravel 13. Static analysis
+is held at **PHPStan level 8**; the suite runs on **Pest 5**.
 
 ## License
 
